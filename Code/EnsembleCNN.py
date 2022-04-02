@@ -30,7 +30,7 @@ import os # to change the working directory
 # Control variables
 """
 numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to numberSubjectsN)
-numberSubjectsSDB = 3 # number of subjects with sleep Disorder to be considered (from 0 to numberSubjectsSDB)
+numberSubjectsSD = 3 # number of subjects with sleep Disorder to be considered (from 0 to numberSubjectsSD)
 startEpochs = 0 # number of the subject to start the leave one out examination
 useSDpatients = 2 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE
 Begin = 0 # location of the sorted array where the data for the first subject used to compose the training dataset for the leave one out examination is identified, the training dataset is composed of subejcts from Begin to BeginTest
@@ -53,8 +53,8 @@ if useSDpatients > 0:
         disorder = "nfle" # healthy and NFLE
 else:
     disorder = "n"
-    Epochs = 19-numberSubjectsSDB-1 # number of the subject to finish the leave one out examination
-    BeginTest = 18-numberSubjectsSDB-1 # location of the sorted array where the testing subject for the leave one out examination is identified
+    Epochs = 19-numberSubjectsSD-1 # number of the subject to finish the leave one out examination
+    BeginTest = 18-numberSubjectsSD-1 # location of the sorted array where the testing subject for the leave one out examination is identified
 # for A phase examination of all cycles, up to EpochsWork, for each subejct
 AccAtInterA = np.zeros ([EpochsWork, 3]) # variable holding the accuracy for the A phase estimation of each classifier composing the classifier ensemble
 SenAtInterA = np.zeros ([EpochsWork, 3]) # variable holding the sensitivity for the A phase estimation of each classifier composing the classifier ensemble
@@ -210,9 +210,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             """
             for JJ in range (numberSubjectsN + 1): # load the normal subjects' data
                 if JJ < 11: # from subject 0 to 10
-                    Datadata = disorder + str (JJ + 1) + "eegminut2.mat" # string with the subejct data
-                    labName = disorder + str (JJ + 1) + "eegminutLable2.mat" # string with the subejct A phase labels
-                    labNameh = disorder + str (JJ + 1) + "hypnoEEGminutLable2V2.mat" # string with the subejct NREM labels
+                    Datadata = "n" + str (JJ + 1) + "eegminut2.mat" # string with the subejct data
+                    labName = "n" + str (JJ + 1) + "eegminutLable2.mat" # string with the subejct A phase labels
+                    labNameh = "n" + str (JJ + 1) + "hypnoEEGminutLable2V2.mat" # string with the subejct NREM labels
                     mat = spio.loadmat (Datadata, squeeze_me = True) # load the subject's data
                     Datadata = mat.get ('eegSensor') # dictionary holding the subject's data
                     del mat # delet the dictionary with the subject's data
@@ -226,53 +226,53 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     labNameh [labNameh == 5] = 0 # convert the REM labels to 0, refering both REM and wake periods, desinating the not-NREM data
                     labNameh [labNameh > 0] = 1 # convert the sleep stage labels into only NREM labels
                     if JJ == 0: # subejct 0
-                        n1 = Datadata # varaible holding subject's 0 data
+                        n1 = Datadata # varaible holding heathy subject's 0 data
                         nc1 = labName # varaible holding subject's 0 A phase labels
                         nch1 = labNameh # varaible holding subject's 0 NREM labels
                     elif JJ == 1: # subejct 1
-                        n2 = Datadata # varaible holding subject's 1 data
+                        n2 = Datadata # varaible holding heathy subject's 1 data
                         nc2 = labName # varaible holding subject's 1 A phase labels
                         nch2 = labNameh # varaible holding subject's 1 NREM labels
                     elif JJ == 2: # subejct 2
-                        n3 = Datadata # varaible holding subject's 2 data
+                        n3 = Datadata # varaible holding heathy subject's 2 data
                         nc3 = labName # varaible holding subject's 2 A phase labels
                         nch3 = labNameh # varaible holding subject's 2 NREM labels
                     elif JJ == 3: # subejct 3
-                        n4 = Datadata # varaible holding subject's 3 data
+                        n4 = Datadata # varaible holding heathy subject's 3 data
                         nc4 = labName # varaible holding subject's 3 A phase labels
                         nch4 = labNameh # varaible holding subject's 3 NREM labels
                     elif JJ == 4: # subejct 4
-                        n5 = Datadata # varaible holding subject's 4 data
+                        n5 = Datadata # varaible holding heathy subject's 4 data
                         nc5 = labName # varaible holding subject's 4 A phase labels
                         nch5 = labNameh # varaible holding subject's 4 NREM labels
                     elif JJ == 5: # subejct 5
-                        n6 = Datadata # varaible holding subject's 5 data
+                        n6 = Datadata # varaible holding heathy subject's 5 data
                         nc6 = labName # varaible holding subject's 5 A phase labels
                         nch6 = labNameh # varaible holding subject's 5 NREM labels
                     elif JJ == 6: # subejct 6
-                        n7 = Datadata # varaible holding subject's 6 data
+                        n7 = Datadata # varaible holding heathy subject's 6 data
                         nc7 = labName # varaible holding subject's 6 A phase labels
                         nch7 = labNameh # varaible holding subject's 6 NREM labels
                     elif JJ == 7: # subejct 7
-                        n8 = Datadata # varaible holding subject's 7 data
+                        n8 = Datadata # varaible holding heathy subject's 7 data
                         nc8 = labName # varaible holding subject's 7 A phase labels
                         nch8 = labNameh # varaible holding subject's 7 NREM labels
                     elif JJ == 8: # subejct 8
-                        n9 = Datadata # varaible holding subject's 8 data
+                        n9 = Datadata # varaible holding heathy subject's 8 data
                         nc9 = labName # varaible holding subject's 8 A phase labels
                         nch9 = labNameh # varaible holding subject's 8 NREM labels
                     elif JJ == 9: # subejct 9
-                        n10 = Datadata # varaible holding subject's 9 data
+                        n10 = Datadata # varaible holding heathy subject's 9 data
                         nc10 = labName # varaible holding subject's 9 A phase labels
                         nch10 = labNameh # varaible holding subject's 9 NREM labels
                     else: # subejct 10
-                        n11 = Datadata # varaible holding subject's 10 data
+                        n11 = Datadata # varaible holding heathy subject's 10 data
                         nc11 = labName # varaible holding subject's 10 A phase labels
                         nch11 = labNameh # varaible holding subject's 10 NREM labels
                 else: # from subject 11 to 14
-                    Datadata = disorder + str (JJ + 2) + "eegminut2.mat"
-                    labName = disorder + str (JJ + 2) + "eegminutLable2.mat"
-                    labNameh = disorder + str (JJ + 2) + "hypnoEEGminutLable2V2.mat"
+                    Datadata = "n" + str (JJ + 2) + "eegminut2.mat"
+                    labName = "n" + str (JJ + 2) + "eegminutLable2.mat"
+                    labNameh = "n" + str (JJ + 2) + "hypnoEEGminutLable2V2.mat"
                     mat = spio.loadmat (Datadata, squeeze_me = True)
                     Datadata = mat.get ('eegSensor')
                     del mat
@@ -286,26 +286,37 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     labNameh[labNameh == 5] = 0
                     labNameh[labNameh > 0] = 1
                     if JJ == 11: # subejct 11
-                        n13 = Datadata # varaible holding subject's 11 data
+                        n13 = Datadata # varaible holding heathy subject's 11 data
                         nc13 = labName # varaible holding subject's 11 A phase labels
                         nch13 = labNameh # varaible holding subject's 11 NREM labels
                     elif JJ == 12: # subejct 12
-                        n14 = Datadata # varaible holding subject's 12 data
+                        n14 = Datadata # varaible holding heathy subject's 12 data    
                         nc14 = labName # varaible holding subject's 12 A phase labels
                         nch14 = labNameh # varaible holding subject's 12 NREM labels
                     elif JJ == 13: # subejct 13
-                        n15 = Datadata # varaible holding subject's 13 data
+                        n15 = Datadata # varaible holding heathy subject's 13 data
                         nc15 = labName # varaible holding subject's 13 A phase labels
                         nch15 = labNameh # varaible holding subject's 13 NREM labels
                     else: # subejct 14
-                        n16 = Datadata # varaible holding subject's 14 data
+                        n16 = Datadata # varaible holding heathy subject's 14 data
                         nc16 = labName # varaible holding subject's 14 A phase labels
                         nch16 = labNameh # varaible holding subject's 14 NREM labels
             if useSDpatients == 1:
-                for JJ in range (numberSubjectsSDB + 1): # load the SDB subjects' data
-                    Datadata = disorder + str (JJ + 1) + "eegminut2.mat"
-                    labName = disorder + str (JJ + 1) + "eegminutLable2.mat"
-                    labNameh = disorder + str (JJ + 1) + "hypnoEEGminutLable2V2.mat"
+                for JJ in range (numberSubjectsSD + 1): # load the SD subjects' data
+                    if useSDpatients == 1: # for SDB
+                        KK = JJ
+                    else: # for nfle
+                        if JJ == 0: #
+                            KK = 7
+                        elif JJ == 1: 
+                            KK = 13
+                        elif JJ == 2: 
+                            KK = 14
+                        else:
+                            KK = 15
+                    Datadata = disorder + str (KK + 1) + "eegminut2.mat"
+                    labName = disorder + str (KK + 1) + "eegminutLable2.mat"
+                    labNameh = disorder + str (KK + 1) + "hypnoEEGminutLable2V2.mat"
                     mat = spio.loadmat (Datadata, squeeze_me = True)
                     Datadata = mat.get ('eegSensor')
                     del mat
@@ -318,22 +329,22 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     del mat
                     labNameh[labNameh == 5] = 0
                     labNameh[labNameh > 0] = 1
-                    if JJ == 0: # subejct SDB 0
-                        sdb1 = Datadata # varaible holding SDB subject's 0 data
-                        sdbc1 = labName # varaible holding SDB subject's 0 A phase labels
-                        sdbch1 = labNameh # varaible holding SDB subject's 0 NREM labels
-                    elif JJ == 1: # subejct SDB 1
-                        sdb2 = Datadata # varaible holding SDB subject's 1 data
-                        sdbc2 = labName # varaible holding SDB subject's 1 phase labels
-                        sdbch2 = labNameh # varaible holding SDB subject's 1 NREM labels
-                    elif JJ == 2: # subejct SDB 2
-                        sdb3 = Datadata # varaible holding SDB subject's 2 data
-                        sdbc3 = labName # varaible holding SDB subject's 2 A phase labels
-                        sdbch3 = labNameh # varaible holding SDB subject's 2 NREM labels
-                    else: # subejct SDB 3
-                        sdb4 = Datadata # varaible holding SDB subject's 3 data
-                        sdbc4 = labName # varaible holding SDB subject's 3 A phase labels
-                        sdbch4 = labNameh # varaible holding SDB subject's 3 NREM labels
+                    if JJ == 0: # subejct SD 0
+                        sd1 = Datadata # varaible holding SD subject's 0 data
+                        sdc1 = labName # varaible holding SD subject's 0 A phase labels
+                        sdch1 = labNameh # varaible holding SD subject's 0 NREM labels
+                    elif JJ == 1: # subejct SD 1
+                        sd2 = Datadata # varaible holding SD subject's 1 data
+                        sdc2 = labName # varaible holding SD subject's 1 phase labels
+                        sdch2 = labNameh # varaible holding SD subject's 1 NREM labels
+                    elif JJ == 2: # subejct SD 2
+                        sd3 = Datadata # varaible holding SD subject's 2 data
+                        sdc3 = labName # varaible holding SD subject's 2 A phase labels
+                        sdch3 = labNameh # varaible holding SD subject's 2 NREM labels
+                    else: # subejct SD 3
+                        sd4 = Datadata # varaible holding SD subject's 3 data
+                        sdc4 = labName # varaible holding SD subject's 3 A phase labels
+                        sdch4 = labNameh # varaible holding SD subject's 3 NREM labels      
             """
             # produce the overlapping scenarios for A phase
             """
@@ -341,7 +352,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 features = 100 * (OverlappingRight * 2 + 1) # number of features fed to the classifier at each epoch
                 for k in range (numberSubjectsN + 1): # examined normal subjects
                     if k < 11: # from subject 0 to 10
-                        dataName = disorder + str (k + 1) # select the subejct's data to produce the overlapping
+                        dataName = "n" + str (k + 1) # select the subejct's data to produce the overlapping
                         Datadata = eval (dataName) # select the variable holding the subject's data
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRight * 2), OverlappingRight * 2 * 100 + 100)) # variable that will hold the reshaped subject's data
                         counting = 0 # conting variable to hold the number of evaluated epochs
@@ -382,7 +393,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA11 = DatadataV2
                             nc11 = nc11 [0 : len (nc11) - OverlappingRight * 2]
                     else:
-                        dataName = disorder + str (k + 2)
+                        dataName = "n" + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRight * 2), OverlappingRight * 2 * 100 + 100))
                         counting = 0
@@ -402,8 +413,19 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA16 = DatadataV2
                             nc16 = nc16 [0 : len (nc16) - OverlappingRight * 2]
                 if useSDpatients == 1:
-                    for k in range (numberSubjectsSDB + 1):
-                        dataName = disorder + str (k + 1)
+                    for k in range (numberSubjectsSD + 1):
+                        if useSDpatients == 1: # for SDB
+                            KK = k
+                        else: # for nfle
+                            if k == 0:
+                                KK = 7
+                            elif k == 1: 
+                                KK = 13
+                            elif k == 2: 
+                                KK = 14
+                            else:
+                                KK = 15
+                        dataName = disorder + str (KK + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRight * 2), OverlappingRight * 2 * 100 + 100))
                         counting = 0
@@ -412,21 +434,21 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             counting = counting + 1
                         if k == 0:
                             sdbA1 = DatadataV2
-                            sdbc1 = sdbc1 [0 : len (sdbc1) - OverlappingRight * 2]
+                            sdc1 = sdc1 [0 : len (sdc1) - OverlappingRight * 2]
                         elif k == 1:
                             sdbA2 = DatadataV2
-                            sdbc2 = sdbc2 [0 : len (sdbc2) - OverlappingRight * 2]
+                            sdc2 = sdc2 [0 : len (sdc2) - OverlappingRight * 2]
                         elif k == 2:
                             sdbA3 = DatadataV2
-                            sdbc3 = sdbc3 [0 : len (sdbc3) - OverlappingRight * 2]
+                            sdc3 = sdc3 [0 : len (sdc3) - OverlappingRight * 2]
                         else:
                             sdbA4 = DatadataV2
-                            sdbc4 = sdbc4 [0 : len (sdbc4) - OverlappingRight * 2]
+                            sdc4 = sdc4 [0 : len (sdc4) - OverlappingRight * 2]
             elif overlapingSide [a] == 1: # test overlapping to the left and right: central 100 points refer to the epoch's label and the remaining poins are overlapping to either left or right    
                 features = 100 * (OverlappingCenter * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = disorder + str (k + 1) 
+                        dataName = "n" + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
                         counting = 0
@@ -467,7 +489,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA11 = DatadataV2
                             nc11 = nc11 [OverlappingCenter : len (nc11) - OverlappingCenter]
                     else:
-                        dataName = disorder + str (k + 2)
+                        dataName = "n" + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
                         counting = 0
@@ -487,7 +509,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA16 = DatadataV2
                             nc16 = nc16 [OverlappingCenter : len (nc16) - OverlappingCenter]
                 if useSDpatients == 1:
-                    for k in range (numberSubjectsSDB + 1):
+                    for k in range (numberSubjectsSD + 1):
                         dataName = disorder + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
@@ -497,21 +519,21 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             counting = counting + 1
                         if k == 0:
                             sdbA1 = DatadataV2
-                            sdbc1 = sdbc1 [OverlappingCenter : len (sdbc1) - OverlappingCenter]
+                            sdc1 = sdc1 [OverlappingCenter : len (sdc1) - OverlappingCenter]
                         elif k == 1:
                             sdbA2 = DatadataV2
-                            sdbc2 = sdbc2 [OverlappingCenter : len (sdbc2) - OverlappingCenter]
+                            sdc2 = sdc2 [OverlappingCenter : len (sdc2) - OverlappingCenter]
                         elif k == 2:
                             sdbA3 = DatadataV2
-                            sdbc3 = sdbc3 [OverlappingCenter : len (sdbc3) - OverlappingCenter]
+                            sdc3 = sdc3 [OverlappingCenter : len (sdc3) - OverlappingCenter]
                         else:
                             sdbA4 = DatadataV2
-                            sdbc4 = sdbc4 [OverlappingCenter : len (sdbc4) - OverlappingCenter]
+                            sdc4 = sdc4 [OverlappingCenter : len (sdc4) - OverlappingCenter]
             else: # test overlapping to the left: last 100 points refer to the epoch's label and the remaining poins are overlapping to the left
                 features = 100 * (OverlappingLeft * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = disorder + str (k + 1) 
+                        dataName = "n" + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
                         counting = 0
@@ -552,7 +574,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA11 = DatadataV2
                             nc11 = nc11 [OverlappingLeft * 2 : len (nc11)]
                     else:
-                        dataName = disorder + str (k + 2) 
+                        dataName = "n" + str (k + 2) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
                         counting = 0
@@ -572,7 +594,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA16 = DatadataV2
                             nc16 = nc16 [OverlappingLeft * 2 : len (nc16)]
                 if useSDpatients == 1:
-                    for k in range (numberSubjectsSDB + 1):
+                    for k in range (numberSubjectsSD + 1):
                         dataName = disorder + str (k + 1) 
                         Datadata = eval(dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
@@ -581,16 +603,16 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             DatadataV2 [counting, ] = Datadata [(x * 100) : (x * 100 + 100) + OverlappingLeft * 100 * 2]
                         if k == 0:
                             sdbA1 = DatadataV2
-                            sdbc1 = sdbc1 [OverlappingLeft * 2 : len (sdbc1)]
+                            sdc1 = sdc1 [OverlappingLeft * 2 : len (sdc1)]
                         elif k == 1:
                             sdbA2 = DatadataV2
-                            sdbc2 = sdbc2 [OverlappingLeft * 2 : len (sdbc2)]
+                            sdc2 = sdc2 [OverlappingLeft * 2 : len (sdc2)]
                         elif k == 2:
                             sdbA3 = DatadataV2
-                            sdbc3 = sdbc3 [OverlappingLeft * 2 : len (sdbc3)]
+                            sdc3 = sdc3 [OverlappingLeft * 2 : len (sdc3)]
                         else:
                             sdbA4 = DatadataV2
-                            sdbc4 = sdbc4 [OverlappingLeft * 2 : len (sdbc4)]
+                            sdc4 = sdc4 [OverlappingLeft * 2 : len (sdc4)]
                         
             """
             # produce the overlapping scenarios for NREM
@@ -599,7 +621,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 featuresH = 100 * (OverlappingRightH * 2 + 1)
                 for k in range (numberSubjectsN + 1): 
                     if k < 11:
-                        dataName = disorder + str (k + 1) 
+                        dataName = "n" + str (k + 1) 
                         Datadata = eval (dataName) 
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRightH * 2), OverlappingRightH * 2 * 100 + 100))
                         counting = 0 
@@ -640,7 +662,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH11 = DatadataV2
                             nch11 = nch11 [0 : len (nch11) - OverlappingRightH * 2] 
                     else:
-                        dataName = disorder + str (k + 2)
+                        dataName = "n" + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRightH * 2), OverlappingRightH * 2 * 100 + 100))
                         counting = 0
@@ -660,7 +682,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH16 = DatadataV2
                             nch16 = nch16 [0 : len (nch16) - OverlappingRightH * 2] 
                 if useSDpatients == 1:
-                    for k in range (numberSubjectsSDB + 1):
+                    for k in range (numberSubjectsSD + 1):
                         dataName = disorder + str (k + 1)  
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRightH * 2), OverlappingRightH * 2 * 100 + 100))
@@ -670,21 +692,21 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             counting = counting + 1
                         if k == 0:
                             sdbH1 = DatadataV2
-                            sdbch1 = sdbch1 [0 : len (sdbch1) - OverlappingRightH * 2] 
+                            sdch1 = sdch1 [0 : len (sdch1) - OverlappingRightH * 2] 
                         elif k == 1:
                             sdbH2 = DatadataV2
-                            sdbch2 = sdbch2 [0 : len (sdbch2) - OverlappingRightH * 2] 
+                            sdch2 = sdch2 [0 : len (sdch2) - OverlappingRightH * 2] 
                         elif k == 2:
                             sdbH3 = DatadataV2
-                            sdbch3 = sdbch3 [0 : len (sdbch3) - OverlappingRightH * 2] 
+                            sdch3 = sdch3 [0 : len (sdch3) - OverlappingRightH * 2] 
                         else:
                             sdbH4 = DatadataV2
-                            sdbch4 = sdbch4 [0 : len (sdbch4) - OverlappingRightH * 2] 
+                            sdch4 = sdch4 [0 : len (sdch4) - OverlappingRightH * 2] 
             elif overlapingSideH [a] == 1:    
                 featuresH = 100 * (OverlappingCenterH * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = disorder + str (k + 1) 
+                        dataName = "n" + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
                         counting = 0
@@ -725,7 +747,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH11 = DatadataV2
                             nch11 = nch11 [OverlappingCenterH : len (nch11) - OverlappingCenterH]
                     else:
-                        dataName = disorder + str (k + 2)
+                        dataName = "n" + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
                         counting = 0
@@ -745,7 +767,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH16 = DatadataV2
                             nch16 = nch16 [OverlappingCenterH : len (nch16) - OverlappingCenterH]
                 if useSDpatients == 1:
-                    for k in range (numberSubjectsSDB + 1):
+                    for k in range (numberSubjectsSD + 1):
                         dataName = disorder + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
@@ -755,21 +777,21 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             counting = counting + 1
                         if k == 0:
                             sdbH1 = DatadataV2
-                            sdbch1 = sdbch1 [OverlappingCenterH : len (sdbch1) - OverlappingCenterH]
+                            sdch1 = sdch1 [OverlappingCenterH : len (sdch1) - OverlappingCenterH]
                         elif k == 1:
                             sdbH2 = DatadataV2
-                            sdbch2 = sdbch2 [OverlappingCenterH : len (sdbch2) - OverlappingCenterH]
+                            sdch2 = sdch2 [OverlappingCenterH : len (sdch2) - OverlappingCenterH]
                         elif k == 2:
                             sdbH3 = DatadataV2
-                            sdbch3 = sdbch3 [OverlappingCenterH : len (sdbch3) - OverlappingCenterH]
+                            sdch3 = sdch3 [OverlappingCenterH : len (sdch3) - OverlappingCenterH]
                         else:
                             sdbH4 = DatadataV2
-                            sdbch4 = sdbch4 [OverlappingCenterH : len (sdbch4) - OverlappingCenterH]
+                            sdch4 = sdch4 [OverlappingCenterH : len (sdch4) - OverlappingCenterH]
             else: 
                 featuresH = 100 * (OverlappingLeftH * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = disorder + str (k + 1) 
+                        dataName = "n" + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
                         counting = 0
@@ -810,7 +832,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH11 = DatadataV2
                             nch11 = nch11 [OverlappingLeftH * 2 : len (nch11)]
                     else:
-                        dataName = disorder + str (k + 2) 
+                        dataName = "n" + str (k + 2) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
                         counting = 0
@@ -830,7 +852,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH16 = DatadataV2
                             nch16 = nch16 [OverlappingLeftH * 2 : len (nch16)]
                 if useSDpatients == 1:
-                    for k in range (numberSubjectsSDB + 1):
+                    for k in range (numberSubjectsSD + 1):
                         dataName = disorder + str (k + 1) 
                         Datadata = eval(dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
@@ -839,16 +861,16 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             DatadataV2 [counting, ] = Datadata [(x * 100) : (x * 100 + 100) + OverlappingLeftH * 100 * 2]
                         if k == 0:
                             sdbH1 = DatadataV2
-                            sdbch1 = sdbch1 [OverlappingLeftH * 2 : len (sdbch1)]
+                            sdch1 = sdch1 [OverlappingLeftH * 2 : len (sdch1)]
                         elif k == 1:
                             sdbH2 = DatadataV2
-                            sdbch2 = sdbch2 [OverlappingLeftH * 2 : len (sdbch2)]
+                            sdch2 = sdch2 [OverlappingLeftH * 2 : len (sdch2)]
                         elif k == 2:
                             sdbH3 = DatadataV2
-                            sdbch3 = sdbch3 [OverlappingLeftH * 2 : len (sdbch3)]
+                            sdch3 = sdch3 [OverlappingLeftH * 2 : len (sdch3)]
                         else:
                             sdbH4 = DatadataV2     
-                            sdbch4 = sdbch4 [OverlappingLeftH * 2 : len (sdbch4)]
+                            sdch4 = sdch4 [OverlappingLeftH * 2 : len (sdch4)]
             """
             # create the training and testing sets
             """
@@ -1014,23 +1036,23 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 if examinedSubjects [Begin] == 15:
                     XTrain = sdbA1
                     XTrainH = sdbH1
-                    YTrainh = sdbch1
-                    YTrain = sdbc1
+                    YTrainh = sdch1
+                    YTrain = sdc1
                 if examinedSubjects [Begin] == 16:
                     XTrain = sdbA2
                     XTrainH = sdbH2
-                    YTrainh = sdbch2
-                    YTrain = sdbc2
+                    YTrainh = sdch2
+                    YTrain = sdc2
                 if examinedSubjects [Begin] == 17:
                     XTrain = sdbA3
                     XTrainH = sdbH3
-                    YTrainh = sdbch3
-                    YTrain = sdbc3
+                    YTrainh = sdch3
+                    YTrain = sdc3
                 if examinedSubjects [Begin] == 18:
                     XTrain = sdbA4
                     XTrainH = sdbH4
-                    YTrainh = sdbch4
-                    YTrain = sdbc4
+                    YTrainh = sdch4
+                    YTrain = sdc4
             # initiate the test sets    
             if examinedSubjects [BeginTest] == 0:
                 XTest = nA1
@@ -1111,23 +1133,23 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 if examinedSubjects [BeginTest] == 15:
                     XTest = sdbA1
                     XTestH = sdbH1
-                    YTesth = sdbch1
-                    YTest = sdbc1
+                    YTesth = sdch1
+                    YTest = sdc1
                 if examinedSubjects [BeginTest] == 16:
                     XTest = sdbA2
                     XTestH = sdbH2
-                    YTesth = sdbch2
-                    YTest = sdbc2
+                    YTesth = sdch2
+                    YTest = sdc2
                 if examinedSubjects [BeginTest] == 17:
                     XTest = sdbA3
                     XTestH = sdbH3
-                    YTesth = sdbch3
-                    YTest = sdbc3
+                    YTesth = sdch3
+                    YTest = sdc3
                 if examinedSubjects [BeginTest] == 18:
                     XTest = sdbA4
                     XTestH = sdbH4
-                    YTesth = sdbch4
-                    YTest = sdbc4
+                    YTesth = sdch4
+                    YTest = sdc4
             # finish the taining set
             for x in range(20):
                 if x < BeginTest and x > Begin : # elements to compose the training set
@@ -1209,24 +1231,24 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     if useSDpatients > 0:
                         if examinedSubjects [x] == 15:
                             XTrainH = np.concatenate ((XTrainH, sdbH1), axis = 0)
-                            YTrainh = np.concatenate ((YTrainh, sdbch1), axis = 0)
+                            YTrainh = np.concatenate ((YTrainh, sdch1), axis = 0)
                             XTrain = np.concatenate ((XTrain, sdbA1), axis = 0)
-                            YTrain = np.concatenate ((YTrain, sdbc1), axis = 0)
+                            YTrain = np.concatenate ((YTrain, sdc1), axis = 0)
                         if examinedSubjects [x] == 16:
                             XTrainH = np.concatenate ((XTrainH, sdbH2), axis = 0)
-                            YTrainh = np.concatenate ((YTrainh, sdbch2), axis = 0)
+                            YTrainh = np.concatenate ((YTrainh, sdch2), axis = 0)
                             XTrain = np.concatenate ((XTrain, sdbA2), axis = 0)
-                            YTrain = np.concatenate ((YTrain, sdbc2), axis = 0)
+                            YTrain = np.concatenate ((YTrain, sdc2), axis = 0)
                         if examinedSubjects [x] == 17:
                             XTrainH = np.concatenate ((XTrainH, sdbH3), axis = 0)
-                            YTrainh = np.concatenate ((YTrainh, sdbch3), axis = 0)
+                            YTrainh = np.concatenate ((YTrainh, sdch3), axis = 0)
                             XTrain = np.concatenate ((XTrain, sdbA3), axis = 0)
-                            YTrain = np.concatenate ((YTrain, sdbc3), axis = 0)
+                            YTrain = np.concatenate ((YTrain, sdc3), axis = 0)
                         if examinedSubjects [x] == 18:
                             XTrainH = np.concatenate ((XTrainH, sdbH4), axis = 0)
-                            YTrainh = np.concatenate ((YTrainh, sdbch4), axis = 0)
+                            YTrainh = np.concatenate ((YTrainh, sdch4), axis = 0)
                             XTrain = np.concatenate ((XTrain, sdbA4), axis = 0)
-                            YTrain = np.concatenate ((YTrain, sdbc4), axis = 0)
+                            YTrain = np.concatenate ((YTrain, sdc4), axis = 0)
             del nH1, nch1, nA1, nc1
             del nH2, nch2, nA2, nc2
             del nH3, nch3, nA3, nc3
@@ -1243,10 +1265,10 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             del nH15, nch15, nA15, nc15
             del nH16, nch16, nA16, nc16
             if useSDpatients > 0:
-                del sdbH1, sdbch1, sdbA1, sdbc1
-                del sdbH2, sdbch2, sdbA2, sdbc2
-                del sdbH3, sdbch3, sdbA3, sdbc3
-                del sdbH4, sdbch4, sdbA4, sdbc4
+                del sdbH1, sdch1, sdbA1, sdc1
+                del sdbH2, sdch2, sdbA2, sdc2
+                del sdbH3, sdch3, sdbA3, sdc3
+                del sdbH4, sdch4, sdbA4, sdc4
             
             # relabel the labels tahat have the three A phase subtypes (A1, A2, and A3, referting to 1, 2, and 3, respectivly) to have only A (refering to 1) or not-A (refering to 0) lebels
             for i in range (0, len (YTrain), 1): # check the set with the training A phase labels
