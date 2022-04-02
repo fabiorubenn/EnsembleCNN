@@ -502,7 +502,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nc16 = nc16 [OverlappingCenter : len (nc16) - OverlappingCenter]
                 if useSDpatients > 0:
                     for k in range (numberSubjectsSD + 1):
-                        dataName = str (disorder) + str (k + 1)
+                        dataName = "sd" + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
                         counting = 0
@@ -587,7 +587,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nc16 = nc16 [OverlappingLeft * 2 : len (nc16)]
                 if useSDpatients > 0:
                     for k in range (numberSubjectsSD + 1):
-                        dataName = str (disorder) + str (k + 1) 
+                        dataName = "sd" + str (k + 1) 
                         Datadata = eval(dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
                         counting = 0
@@ -760,7 +760,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nch16 = nch16 [OverlappingCenterH : len (nch16) - OverlappingCenterH]
                 if useSDpatients > 0:
                     for k in range (numberSubjectsSD + 1):
-                        dataName = str (disorder) + str (k + 1)
+                        dataName = "sd" + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
                         counting = 0
@@ -845,7 +845,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nch16 = nch16 [OverlappingLeftH * 2 : len (nch16)]
                 if useSDpatients > 0:
                     for k in range (numberSubjectsSD + 1):
-                        dataName = str (disorder) + str (k + 1) 
+                        dataName = "sd" + str (k + 1) 
                         Datadata = eval(dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
                         counting = 0
