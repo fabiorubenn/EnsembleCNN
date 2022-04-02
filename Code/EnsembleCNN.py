@@ -29,8 +29,8 @@ import os # to change the working directory
 """
 # Control variables
 """
-numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to 14)
-numberSubjectsSDB = 3 # number of subjects with Sleep-Disordered Breathing (SDB) to be considered (from 0 to 3)
+numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to numberSubjectsN)
+numberSubjectsSDB = 3 # number of subjects with sleep Disorder to be considered (from 0 to numberSubjectsSDB)
 startEpochs = 0 # number of the subject to start the leave one out examination
 useSDpatients = 2 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE
 Begin = 0 # location of the sorted array where the data for the first subject used to compose the training dataset for the leave one out examination is identified, the training dataset is composed of subejcts from Begin to BeginTest
@@ -52,6 +52,7 @@ if useSDpatients > 0:
     else:
         disorder = "nfle" # healthy and NFLE
 else:
+    disorder = "n"
     Epochs = 19-numberSubjectsSDB-1 # number of the subject to finish the leave one out examination
     BeginTest = 18-numberSubjectsSDB-1 # location of the sorted array where the testing subject for the leave one out examination is identified
 # for A phase examination of all cycles, up to EpochsWork, for each subejct
@@ -209,9 +210,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             """
             for JJ in range (numberSubjectsN + 1): # load the normal subjects' data
                 if JJ < 11: # from subject 0 to 10
-                    Datadata = "n" + str (JJ + 1) + "eegminut2.mat" # string with the subejct data
-                    labName = "n" + str (JJ + 1) + "eegminutLable2.mat" # string with the subejct A phase labels
-                    labNameh = "n" + str (JJ + 1) + "hypnoEEGminutLable2V2.mat" # string with the subejct NREM labels
+                    Datadata = disorder + str (JJ + 1) + "eegminut2.mat" # string with the subejct data
+                    labName = disorder + str (JJ + 1) + "eegminutLable2.mat" # string with the subejct A phase labels
+                    labNameh = disorder + str (JJ + 1) + "hypnoEEGminutLable2V2.mat" # string with the subejct NREM labels
                     mat = spio.loadmat (Datadata, squeeze_me = True) # load the subject's data
                     Datadata = mat.get ('eegSensor') # dictionary holding the subject's data
                     del mat # delet the dictionary with the subject's data
@@ -269,9 +270,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         nc11 = labName # varaible holding subject's 10 A phase labels
                         nch11 = labNameh # varaible holding subject's 10 NREM labels
                 else: # from subject 11 to 14
-                    Datadata = "n" + str (JJ + 2) + "eegminut2.mat"
-                    labName = "n" + str (JJ + 2) + "eegminutLable2.mat"
-                    labNameh = "n" + str (JJ + 2) + "hypnoEEGminutLable2V2.mat"
+                    Datadata = disorder + str (JJ + 2) + "eegminut2.mat"
+                    labName = disorder + str (JJ + 2) + "eegminutLable2.mat"
+                    labNameh = disorder + str (JJ + 2) + "hypnoEEGminutLable2V2.mat"
                     mat = spio.loadmat (Datadata, squeeze_me = True)
                     Datadata = mat.get ('eegSensor')
                     del mat
@@ -340,7 +341,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 features = 100 * (OverlappingRight * 2 + 1) # number of features fed to the classifier at each epoch
                 for k in range (numberSubjectsN + 1): # examined normal subjects
                     if k < 11: # from subject 0 to 10
-                        dataName = "n" + str (k + 1) # select the subejct's data to produce the overlapping
+                        dataName = disorder + str (k + 1) # select the subejct's data to produce the overlapping
                         Datadata = eval (dataName) # select the variable holding the subject's data
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRight * 2), OverlappingRight * 2 * 100 + 100)) # variable that will hold the reshaped subject's data
                         counting = 0 # conting variable to hold the number of evaluated epochs
@@ -381,7 +382,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA11 = DatadataV2
                             nc11 = nc11 [0 : len (nc11) - OverlappingRight * 2]
                     else:
-                        dataName = "n" + str (k + 2)
+                        dataName = disorder + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRight * 2), OverlappingRight * 2 * 100 + 100))
                         counting = 0
@@ -425,7 +426,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 features = 100 * (OverlappingCenter * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = "n" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
                         counting = 0
@@ -466,7 +467,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA11 = DatadataV2
                             nc11 = nc11 [OverlappingCenter : len (nc11) - OverlappingCenter]
                     else:
-                        dataName = "n" + str (k + 2)
+                        dataName = disorder + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
                         counting = 0
@@ -510,7 +511,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 features = 100 * (OverlappingLeft * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = "n" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
                         counting = 0
@@ -551,7 +552,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nA11 = DatadataV2
                             nc11 = nc11 [OverlappingLeft * 2 : len (nc11)]
                     else:
-                        dataName = "n" + str (k + 2) 
+                        dataName = disorder + str (k + 2) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
                         counting = 0
@@ -598,7 +599,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 featuresH = 100 * (OverlappingRightH * 2 + 1)
                 for k in range (numberSubjectsN + 1): 
                     if k < 11:
-                        dataName = "n" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval (dataName) 
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRightH * 2), OverlappingRightH * 2 * 100 + 100))
                         counting = 0 
@@ -639,7 +640,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH11 = DatadataV2
                             nch11 = nch11 [0 : len (nch11) - OverlappingRightH * 2] 
                     else:
-                        dataName = "n" + str (k + 2)
+                        dataName = disorder + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRightH * 2), OverlappingRightH * 2 * 100 + 100))
                         counting = 0
@@ -683,7 +684,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 featuresH = 100 * (OverlappingCenterH * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = "n" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
                         counting = 0
@@ -724,7 +725,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH11 = DatadataV2
                             nch11 = nch11 [OverlappingCenterH : len (nch11) - OverlappingCenterH]
                     else:
-                        dataName = "n" + str (k + 2)
+                        dataName = disorder + str (k + 2)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
                         counting = 0
@@ -768,7 +769,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 featuresH = 100 * (OverlappingLeftH * 2 + 1)
                 for k in range (numberSubjectsN + 1):
                     if k < 11:
-                        dataName = "n" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
                         counting = 0
@@ -809,7 +810,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             nH11 = DatadataV2
                             nch11 = nch11 [OverlappingLeftH * 2 : len (nch11)]
                     else:
-                        dataName = "n" + str (k + 2) 
+                        dataName = disorder + str (k + 2) 
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
                         counting = 0
@@ -854,7 +855,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             tf.keras.backend.clear_session() # for clearing the secction, realeasing the GPU memory after a training cycle 
             gc.collect() # to release the holded memory in the garbage collector   
             # select the subejcts to compose the training (fist 18 subejct) and testing (last subejct) sets
-            if useSDpatients == 1:
+            if useSDpatients > 0:
                 if ee == 0:
                     examinedSubjects = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 0])
                 elif ee == 1:
@@ -1009,7 +1010,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 XTrainH = nH16
                 YTrainh = nch16
                 YTrain = nc16
-            if useSDpatients == 1:
+            if useSDpatients > 0:
                 if examinedSubjects [Begin] == 15:
                     XTrain = sdbA1
                     XTrainH = sdbH1
@@ -1106,7 +1107,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 XTestH = nH16
                 YTesth = nch16
                 YTest = nc16
-            if useSDpatients == 1:
+            if useSDpatients > 0:
                 if examinedSubjects [BeginTest] == 15:
                     XTest = sdbA1
                     XTestH = sdbH1
@@ -1205,7 +1206,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         YTrainh = np.concatenate ((YTrainh, nch16), axis = 0)
                         XTrain = np.concatenate ((XTrain, nA16), axis = 0)
                         YTrain = np.concatenate ((YTrain, nc16), axis = 0)
-                    if useSDpatients == 1:
+                    if useSDpatients > 0:
                         if examinedSubjects [x] == 15:
                             XTrainH = np.concatenate ((XTrainH, sdbH1), axis = 0)
                             YTrainh = np.concatenate ((YTrainh, sdbch1), axis = 0)
@@ -1241,7 +1242,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             del nH14, nch14, nA14, nc14
             del nH15, nch15, nA15, nc15
             del nH16, nch16, nA16, nc16
-            if useSDpatients == 1:
+            if useSDpatients > 0:
                 del sdbH1, sdbch1, sdbA1, sdbc1
                 del sdbH2, sdbch2, sdbA2, sdbc2
                 del sdbH3, sdbch3, sdbA3, sdbc3
@@ -1346,6 +1347,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 model.add (Dense (2, activation = 'softmax'))
             model.compile (loss = 'binary_crossentropy', optimizer = 'adam', metrics = [tf.keras.metrics.AUC()]) # compile the classifier
             model.fit(x_train, y_train, batch_size = 1000, epochs = 50, validation_data = (x_valid, y_valid), verbose = 1, shuffle = True, class_weight = class_weights, callbacks = EarlyStoppingAtMinLoss (patienteceValue, (x_valid, y_valid))) # fit the model
+            model.save(disorder + 'APhase_OverlappingSide_' + overlapingSide [a]) # save the trained model
             print ("\n\n Testing A phase for subject ", ee, ", epoch ", ff, " and overlapping side ", a)    
             proba = model.predict (XTest) # estimate the probability of the labels of the testing set
             YTestOneLine = np.zeros (len (YTest)) # variable to hold the testing set labels in the form of an array
@@ -1454,6 +1456,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 model.add (Dense (2, activation = 'softmax'))
             model.compile (loss = 'binary_crossentropy', optimizer = 'adam', metrics = [tf.keras.metrics.AUC ()])
             model.fit (x_trainh, y_trainh, batch_size=1000, epochs=50, validation_data = (x_validh, y_validh), verbose = 1, shuffle = True, class_weight = class_weightsh, callbacks = EarlyStoppingAtMinLoss (patienteceValue, (x_validh, y_validh)))
+            model.save(disorder + 'NREM_OverlappingSide_' + overlapingSide [a]) # save the trained model
             del x_trainh, x_validh, y_trainh, y_validh  
             print ("\n\n Testing NREM for subject ", ee, ", epoch ", ff, " and overlapping side ", a)    
             proba2 = model.predict (XTestH)
@@ -1612,53 +1615,53 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             cappredictiony_predhA [combinationA] = 1
                     YTestOneLine = YTestOneLine [OverlappingLeftCorrectL : len (YTestOneLine) - OverlappingLeftCorrectR] # alingh the labels, takinh into consideration that they are currently alingn with the overlapping to the left scenario (a = 2)
                     YTestOneLine = YTestOneLine[CorrectRightA : len (YTestOneLine) - CorrectLeftA] # align the A phase and NREM predictions
-                    if useSDpatients == 1:
-                        StringText = "EstimatedAPhase_Right_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) # save the outputs for further examination
+                    if useSDpatients > 0:
+                        StringText = disorder + "EstimatedAPhase_Right_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) # save the outputs for further examination
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA0R, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA1R, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_Left_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_Left_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA2R, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA3, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_CombinationStrategy_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_CombinationStrategy_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhA, f)
                         f.close ()
-                        StringText = "DatabaseAPhase_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "DatabaseAPhase_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (YTestOneLine, f)
                         f.close ()
                     else:
-                        StringText = "EstimatedAPhase_Right_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
+                        StringText = disorder + "EstimatedAPhase_Right_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA0R, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_Center_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_Center_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA1R, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_Left_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_Left_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA2R, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA3, f)
                         f.close ()
-                        StringText = "EstimatedAPhase_CombinationStrategy_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_CombinationStrategy_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhA, f)
                         f.close ()
-                        StringText = "DatabaseAPhase_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "DatabaseAPhase_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (YTestOneLine, f)
                         f.close ()
@@ -1692,53 +1695,53 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             cappredictiony_predhN [combinationN] = 1
                     YTesthOneLineh = YTesthOneLineh [OverlappingLeftCorrectL : len (YTesthOneLineh) - OverlappingLeftCorrectR]
                     YTesthOneLineh = YTesthOneLineh[CorrectRightH : len (YTesthOneLineh) - CorrectLeftH] # align the A phase and NREM predictions
-                    if useSDpatients == 1:
-                        StringText = "EstimatedNREM_Right_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
+                    if useSDpatients > 0:
+                        StringText = disorder + "EstimatedNREM_Right_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN0R, f)
                         f.close ()
-                        StringText = "EstimatedNREM_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN1R, f)
                         f.close ()
-                        StringText = "EstimatedNREM_Left_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_Left_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN2R, f)
                         f.close ()
-                        StringText = "EstimatedNREM_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN3, f)
                         f.close ()
-                        StringText = "EstimatedNREM_CombinationStrategy_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_CombinationStrategy_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhN, f)
                         f.close ()
-                        StringText = "DatabaseNREM_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "DatabaseNREM_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (YTesthOneLineh, f)
                         f.close ()
                     else:
-                        StringText = "EstimatedNREM_Right_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
+                        StringText = disorder + "EstimatedNREM_Right_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN0R, f)
                         f.close ()
-                        StringText = "EstimatedNREM_Center_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_Center_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN1R, f)
                         f.close ()
-                        StringText = "EstimatedNREM_Left_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_Left_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN2R, f)
                         f.close ()
-                        StringText = "EstimatedNREM_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN3, f)
                         f.close ()
-                        StringText = "EstimatedNREM_CombinationStrategy_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_CombinationStrategy_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhN, f)
                         f.close ()
-                        StringText = "DatabaseNREM_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "DatabaseNREM_Combined_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (YTesthOneLineh, f)
                         f.close ()
@@ -1777,13 +1780,13 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     PPVInterAC [ff] = tp / (tp + fp)
                     NPVInterAC [ff] = tn / (tn + fn)
                     AtotalInter [ff] = sum (cappredictiony_predhA) # total number of epochs classified as A phase      
-                    if useSDpatients == 1:
-                        StringText = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    if useSDpatients > 0:
+                        StringText = disorder + "EstimatedAPhase_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhA, f)
                         f.close ()
                     else:
-                        StringText = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedAPhase_PostProcessing_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhA, f)
                         f.close ()
@@ -1838,13 +1841,13 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     PPVInterNC [ff] = tp / (tp + fp)
                     NPVInterNC [ff] = tn / (tn + fn)
                     NREMtotalInter [ff] = sum (NREMPredicted) # total number of epochs classified as NREM
-                    if useSDpatients == 1:
-                        StringText = "EstimatedNREM_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    if useSDpatients > 0:
+                        StringText = disorder + "EstimatedNREM_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (NREMPredicted, f)
                         f.close ()
                     else:
-                        StringText = "EstimatedNREM_PostProcessing_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                        StringText = disorder + "EstimatedNREM_PostProcessing_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (NREMPredicted, f)
                         f.close ()
@@ -1854,21 +1857,21 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 examineCAP = 1 # perform the CAP examination
                 NREMtotalInter [ff] = sum (cappredictiony_predhN) # total number of epochs classified as NREM
                 AtotalInter [ff] = sum (capPredictedPredicted) # total number of epochs classified as A phase
-                if useSDpatients == 1:
-                    StringText = "EstimatedAPhase_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                if useSDpatients > 0:
+                    StringText = disorder + "EstimatedAPhase_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (cappredictiony_predhA, f)
                     f.close ()
-                    StringText = "EstimatedNREM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    StringText = disorder + "EstimatedNREM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (cappredictiony_predhN, f)
                     f.close ()
                 else:
-                    StringText = "EstimatedAPhase_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    StringText = disorder + "EstimatedAPhase_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (cappredictiony_predhA, f)
                     f.close ()
-                    StringText = "EstimatedNREM_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    StringText = disorder + "EstimatedNREM_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (cappredictiony_predhN, f)
                     f.close ()
@@ -1878,46 +1881,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             if examineCAP == 1:
                 # CAP cycles predicted from the estimated A phase
                 searchval = 1 # look for A phase, corresponding to 1, while not-A is 0
-                predictedCAP = np.copy(cappredictiony_predhA) # variable to be examined by the FSM, holding the classified A phase locations 
-
-                        
-                # for k in range (len(predictedCAP)-2): #decrese the outliers
-                #     if k > 0:
-                #         if predictedCAP[k-1]==0 and predictedCAP[k]==1 and predictedCAP[k+1]==1 and predictedCAP[k+2]==0:
-                #             predictedCAP[k]=0
-                #             predictedCAP[k+1]=0
-                # for k in range (len(predictedCAP)-2):
-                #     if k > 0:
-                #         if predictedCAP[k-1]==1 and predictedCAP[k]==0 and predictedCAP[k+1]==0 and predictedCAP[k+2]==1:
-                #             predictedCAP[k]=1
-                #             predictedCAP[k+1]=1
-                # for k in range (len(predictedCAP)-3):
-                #     if k > 0:
-                #         if predictedCAP[k-1]==0 and predictedCAP[k]==1 and predictedCAP[k+1]==1 and predictedCAP[k+2]==1 and predictedCAP[k+3]==0:
-                #             predictedCAP[k]=0
-                #             predictedCAP[k+1]=0
-                #             predictedCAP[k+2]=0
-                # for k in range (len(predictedCAP)-3):
-                #     if k > 0:
-                #         if predictedCAP[k-1]==1 and predictedCAP[k]==0 and predictedCAP[k+1]==0 and predictedCAP[k+2]==0 and predictedCAP[k+3]==1:
-                #             predictedCAP[k]=1
-                #             predictedCAP[k+1]=1
-                #             predictedCAP[k+2]=1
-                # for k in range (len(predictedCAP)-4):
-                #     if k > 0:
-                #         if predictedCAP[k-1]==0 and predictedCAP[k]==1 and predictedCAP[k+1]==1 and predictedCAP[k+2]==1 and predictedCAP[k+3]==1 and predictedCAP[k+4]==0:
-                #             predictedCAP[k]=0
-                #             predictedCAP[k+1]=0
-                #             predictedCAP[k+2]=0
-                #             predictedCAP[k+3]=0
-                # for k in range (len(predictedCAP)-4):
-                #     if k > 0:
-                #         if predictedCAP[k-1]==1 and predictedCAP[k]==0 and predictedCAP[k+1]==0 and predictedCAP[k+2]==0 and predictedCAP[k+3]==0 and predictedCAP[k+4]==1:
-                #             predictedCAP[k]=1
-                #             predictedCAP[k+1]=1
-                #             predictedCAP[k+2]=1
-                #             predictedCAP[k+3]=1
-                            
+                predictedCAP = np.copy(cappredictiony_predhA) # variable to be examined by the FSM, holding the classified A phase locations                             
                 capPredicted = np.zeros (len (predictedCAP)) # variable to hold the FSM results
                 ii = np.where (predictedCAP == searchval)[0] # find the index of all A phases
                 jj = [t - s for s, t in zip (ii, ii [1 :])] # find the duration all A phases
@@ -1996,21 +1960,21 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 CAPrateErroPercentagetotalInter [ff] = (abs ((sum (capPredicted) / sum (NREMPredicted)) - (sum (capPredictedDatabase) / sum (YTesthOneLineh)))) / (sum (capPredictedDatabase) / sum (YTesthOneLineh)) # estimate the CAP rate error in percentage
                 print('CAP rate error : ', CAPrateErrototalInter [ff])
                 print('CAP rate error percentage : ', CAPrateErroPercentagetotalInter [ff])
-                if useSDpatients == 1:
-                    StringText = "EstimatedCAP_FSM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                if useSDpatients > 0:
+                    StringText = disorder + "EstimatedCAP_FSM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (capPredicted, f)
                     f.close ()
-                    StringText = "DatabaseCAP_FSM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    StringText = disorder + "DatabaseCAP_FSM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (capPredictedDatabase, f)
                     f.close ()
                 else:
-                    StringText = "EstimatedCAP_FSM_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    StringText = disorder + "EstimatedCAP_FSM_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (capPredicted, f)
                     f.close ()
-                    StringText = "DatabaseCAP_FSM_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
+                    StringText = disorder + "DatabaseCAP_FSM_subject{}_Epoch{}-notSDB_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (capPredictedDatabase, f)
                     f.close ()
@@ -2074,39 +2038,36 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
         metricsAC = np.c_ [AccAtEndAC, SenAtEndAC, SpeAtEndAC, TPEndAC, TNEndAC, FPEndAC, FNEndAC, PPVEndAC, NPVEndAC, AtotalEnd] # variable holding all the results for the A phase analysis after ensemble
         metricsNC = np.c_ [AccAtEndNC, SenAtEndNC, SpeAtEndNC, TPEndNC, TNEndNC, FPEndNC, FNEndNC, PPVEndNC, NPVEndNC, NREMtotalEnd] # variable holding all the results for the NREM analysis after ensemble
         metricsC = np.c_ [AccAtEnd, SenAtEnd, SpeAtEnd, TPEnd, TNEnd, FPEnd, FNEnd, PPVEnd, NPVEnd, CAPtotalEnd, CAPrateErrototalEnd, CAPrateErroPercentagetotalEnd] # variable holding all the results for the CAP cycle and CAP rate analysis
-        if useSDpatients == 1:
-            f = open ("metricsAphaseV2.txt", 'ab') # open (or create if it does not exist) the pikle file in the adding entry mode
+        if useSDpatients > 0:
+            f = open (disorder + "metricsAphaseV2.txt", 'ab') # open (or create if it does not exist) the pikle file in the adding entry mode
             pickle.dump (metricsA, f) # add a new entry to the pickle file
             f.close () # close the pickle file
-            f = open ("metricsAphaseEnsembleV2.txt", 'ab')
+            f = open (disorder + "metricsAphaseEnsembleV2.txt", 'ab')
             pickle.dump (metricsAC, f)
             f.close ()
-            f = open ("metricsNREMV2.txt", 'ab')
+            f = open (disorder + "metricsNREMV2.txt", 'ab')
             pickle.dump (metricsN, f)
             f.close ()
-            f = open ("metricsNREMEnsembleV2.txt", 'ab')
+            f = open (disorder + "metricsNREMEnsembleV2.txt", 'ab')
             pickle.dump (metricsNC, f)
             f.close ()
-            f = open ("metricsCAPV2.txt", 'ab')
+            f = open (disorder + "metricsCAPV2.txt", 'ab')
             pickle.dump (metricsC, f)
             f.close ()
         else:
-            f = open ("metricsAphaseV2-notSDB.txt", 'ab') # open (or create if it does not exist) the pikle file in the adding entry mode
+            f = open (disorder + "metricsAphaseV2-notSDB.txt", 'ab') # open (or create if it does not exist) the pikle file in the adding entry mode
             pickle.dump (metricsA, f) # add a new entry to the pickle file
             f.close () # close the pickle file
-            f = open ("metricsAphaseEnsembleV2-notSDB.txt", 'ab')
+            f = open (disorder + "metricsAphaseEnsembleV2-notSDB.txt", 'ab')
             pickle.dump (metricsAC, f)
             f.close ()
-            f = open ("metricsNREMV2-notSDB.txt", 'ab')
+            f = open (disorder + "metricsNREMV2-notSDB.txt", 'ab')
             pickle.dump (metricsN, f)
             f.close ()
-            f = open ("metricsNREMEnsembleV2-notSDB.txt", 'ab')
+            f = open (disorder + "metricsNREMEnsembleV2-notSDB.txt", 'ab')
             pickle.dump (metricsNC, f)
             f.close ()
-            f = open ("metricsCAPV2-notSDB.txt", 'ab')
+            f = open (disorder + "metricsCAPV2-notSDB.txt", 'ab')
             pickle.dump (metricsC, f)
-            f.close ()
-        
-
-        
+            f.close ()        
 print(' Finished ')
