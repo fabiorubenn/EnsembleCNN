@@ -1361,7 +1361,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 model.add (Dense (2, activation = 'softmax'))
             model.compile (loss = 'binary_crossentropy', optimizer = 'adam', metrics = [tf.keras.metrics.AUC()]) # compile the classifier
             model.fit(x_train, y_train, batch_size = 1000, epochs = 50, validation_data = (x_valid, y_valid), verbose = 1, shuffle = True, class_weight = class_weights, callbacks = EarlyStoppingAtMinLoss (patienteceValue, (x_valid, y_valid))) # fit the model
-            model.save(str (disorder) + 'APhase_OverlappingSide_' + overlapingSide [a] + "_subject_" + ee +"_epoch_" + ff) # save the trained model
+            model.save(str (disorder) + 'APhase_OverlappingSide_' + str (overlapingSide [a]) + "_subject_" + str(ee) +"_epoch_" + str(ff)) # save the trained model
             print ("\n\n Testing A phase for subject ", ee, ", epoch ", ff, " and overlapping side ", a)    
             proba = model.predict (XTest) # estimate the probability of the labels of the testing set
             YTestOneLine = np.zeros (len (YTest)) # variable to hold the testing set labels in the form of an array
@@ -1470,7 +1470,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 model.add (Dense (2, activation = 'softmax'))
             model.compile (loss = 'binary_crossentropy', optimizer = 'adam', metrics = [tf.keras.metrics.AUC ()])
             model.fit (x_trainh, y_trainh, batch_size=1000, epochs=50, validation_data = (x_validh, y_validh), verbose = 1, shuffle = True, class_weight = class_weightsh, callbacks = EarlyStoppingAtMinLoss (patienteceValue, (x_validh, y_validh)))
-            model.save(str (disorder) + 'NREM_OverlappingSide_' + overlapingSide [a] + "_subject_" + ee +"_epoch_" + ff) # save the trained model
+            model.save(str (disorder) + 'NREM_OverlappingSide_' + str (overlapingSide [a]) + "_subject_" + str(ee) +"_epoch_" + str(ff))
             del x_trainh, x_validh, y_trainh, y_validh  
             print ("\n\n Testing NREM for subject ", ee, ", epoch ", ff, " and overlapping side ", a)    
             proba2 = model.predict (XTestH)
