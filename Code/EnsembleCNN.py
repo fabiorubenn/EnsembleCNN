@@ -25,19 +25,14 @@ from sklearn.utils import class_weight # to use cost sensitive learning
 from sklearn.model_selection import train_test_split # to crate the validation dataset from the training dataset
 import gc # to release the holded memory in the garbage collector
 import pickle # to store the results of the examination in files
+import os # to change the working directory
 """
 # Control variables
 """
 numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to 14)
 numberSubjectsSDB = 3 # number of subjects with Sleep-Disordered Breathing (SDB) to be considered (from 0 to 3)
 startEpochs = 0 # number of the subject to start the leave one out examination
-useSDBpatients = 1 # 1 to use the SDB patiens and 0 to not use the SDB patients
-if useSDBpatients == 1:
-    Epochs = 19 # number of the subject to finish the leave one out examination
-    BeginTest = 18 # location of the sorted array where the testing subject for the leave one out examination is identified
-else:
-    Epochs = 19-numberSubjectsSDB-1 # number of the subject to finish the leave one out examination
-    BeginTest = 18-numberSubjectsSDB-1 # location of the sorted array where the testing subject for the leave one out examination is identified
+useSDpatients = 2 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE
 Begin = 0 # location of the sorted array where the data for the first subject used to compose the training dataset for the leave one out examination is identified, the training dataset is composed of subejcts from Begin to BeginTest
 EpochsWork = 1 # number of examined iterations for each subejct
 OverLap = [8, 12, 8] # number of overlapping seconds to be considered in the overlapping windows of A phase analysis (need to be 0 or an odd number), either [0] if no overlapping or [amount of overlapping for right, amount of overlapping for center, amount of overlapping for left] to use overlapping
@@ -45,9 +40,20 @@ OverLapH = [16, 14, 16] # number of overlapping seconds to be considered in the 
 thresholdEarlyStoping = 0.005 # minimum increasse in the Area Under the receiving operating Curve (AUC) considered by the early stopping procedure
 patienteceValue = 10 # value used by the early stopping procedure to specify the number of training cycles without a minimum increasse of thresholdEarlyStoping befor stoping the examination
 KernelSize = 5 # size of the kernel used by the convolution layer
+os.chdir("D:\Github\EnsembleCNN\Data") # change the working directory
 """
 # variables to store the results of the examination
 """
+if useSDpatients > 0:
+    Epochs = 19 # number of the subject to finish the leave one out examination
+    BeginTest = 18 # location of the sorted array where the testing subject for the leave one out examination is identified
+    if useSDpatients == 1: 
+        disorder = "sdb" # healthy and SDB
+    else:
+        disorder = "nfle" # healthy and NFLE
+else:
+    Epochs = 19-numberSubjectsSDB-1 # number of the subject to finish the leave one out examination
+    BeginTest = 18-numberSubjectsSDB-1 # location of the sorted array where the testing subject for the leave one out examination is identified
 # for A phase examination of all cycles, up to EpochsWork, for each subejct
 AccAtInterA = np.zeros ([EpochsWork, 3]) # variable holding the accuracy for the A phase estimation of each classifier composing the classifier ensemble
 SenAtInterA = np.zeros ([EpochsWork, 3]) # variable holding the sensitivity for the A phase estimation of each classifier composing the classifier ensemble
@@ -294,11 +300,11 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         n16 = Datadata # varaible holding subject's 14 data
                         nc16 = labName # varaible holding subject's 14 A phase labels
                         nch16 = labNameh # varaible holding subject's 14 NREM labels
-            if useSDBpatients == 1:
+            if useSDpatients == 1:
                 for JJ in range (numberSubjectsSDB + 1): # load the SDB subjects' data
-                    Datadata = "sdb" + str (JJ + 1) + "eegminut2.mat"
-                    labName = "sdb" + str (JJ + 1) + "eegminutLable2.mat"
-                    labNameh = "sdb" + str (JJ + 1) + "hypnoEEGminutLable2V2.mat"
+                    Datadata = disorder + str (JJ + 1) + "eegminut2.mat"
+                    labName = disorder + str (JJ + 1) + "eegminutLable2.mat"
+                    labNameh = disorder + str (JJ + 1) + "hypnoEEGminutLable2V2.mat"
                     mat = spio.loadmat (Datadata, squeeze_me = True)
                     Datadata = mat.get ('eegSensor')
                     del mat
@@ -394,9 +400,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         else:
                             nA16 = DatadataV2
                             nc16 = nc16 [0 : len (nc16) - OverlappingRight * 2]
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     for k in range (numberSubjectsSDB + 1):
-                        dataName = "sdb" + str (k + 1)
+                        dataName = disorder + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRight * 2), OverlappingRight * 2 * 100 + 100))
                         counting = 0
@@ -479,9 +485,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         else:
                             nA16 = DatadataV2
                             nc16 = nc16 [OverlappingCenter : len (nc16) - OverlappingCenter]
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     for k in range (numberSubjectsSDB + 1):
-                        dataName = "sdb" + str (k + 1)
+                        dataName = disorder + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenter * 2), OverlappingCenter * 2 * 100 + 100))
                         counting = 0
@@ -564,9 +570,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         else:
                             nA16 = DatadataV2
                             nc16 = nc16 [OverlappingLeft * 2 : len (nc16)]
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     for k in range (numberSubjectsSDB + 1):
-                        dataName = "sdb" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval(dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeft * 2), OverlappingLeft * 2 * 100 + 100))
                         counting = 0
@@ -652,9 +658,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         else:
                             nH16 = DatadataV2
                             nch16 = nch16 [0 : len (nch16) - OverlappingRightH * 2] 
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     for k in range (numberSubjectsSDB + 1):
-                        dataName = "sdb" + str (k + 1)  
+                        dataName = disorder + str (k + 1)  
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingRightH * 2), OverlappingRightH * 2 * 100 + 100))
                         counting = 0
@@ -737,9 +743,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         else:
                             nH16 = DatadataV2
                             nch16 = nch16 [OverlappingCenterH : len (nch16) - OverlappingCenterH]
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     for k in range (numberSubjectsSDB + 1):
-                        dataName = "sdb" + str (k + 1)
+                        dataName = disorder + str (k + 1)
                         Datadata = eval (dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingCenterH * 2), OverlappingCenterH * 2 * 100 + 100))
                         counting = 0
@@ -822,9 +828,9 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         else:
                             nH16 = DatadataV2
                             nch16 = nch16 [OverlappingLeftH * 2 : len (nch16)]
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     for k in range (numberSubjectsSDB + 1):
-                        dataName = "sdb" + str (k + 1) 
+                        dataName = disorder + str (k + 1) 
                         Datadata = eval(dataName)
                         DatadataV2 = np.zeros (((int (len (Datadata) / 100) - OverlappingLeftH * 2), OverlappingLeftH * 2 * 100 + 100))
                         counting = 0
@@ -848,7 +854,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             tf.keras.backend.clear_session() # for clearing the secction, realeasing the GPU memory after a training cycle 
             gc.collect() # to release the holded memory in the garbage collector   
             # select the subejcts to compose the training (fist 18 subejct) and testing (last subejct) sets
-            if useSDBpatients == 1:
+            if useSDpatients == 1:
                 if ee == 0:
                     examinedSubjects = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 0])
                 elif ee == 1:
@@ -1003,7 +1009,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 XTrainH = nH16
                 YTrainh = nch16
                 YTrain = nc16
-            if useSDBpatients == 1:
+            if useSDpatients == 1:
                 if examinedSubjects [Begin] == 15:
                     XTrain = sdbA1
                     XTrainH = sdbH1
@@ -1100,7 +1106,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 XTestH = nH16
                 YTesth = nch16
                 YTest = nc16
-            if useSDBpatients == 1:
+            if useSDpatients == 1:
                 if examinedSubjects [BeginTest] == 15:
                     XTest = sdbA1
                     XTestH = sdbH1
@@ -1199,7 +1205,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                         YTrainh = np.concatenate ((YTrainh, nch16), axis = 0)
                         XTrain = np.concatenate ((XTrain, nA16), axis = 0)
                         YTrain = np.concatenate ((YTrain, nc16), axis = 0)
-                    if useSDBpatients == 1:
+                    if useSDpatients == 1:
                         if examinedSubjects [x] == 15:
                             XTrainH = np.concatenate ((XTrainH, sdbH1), axis = 0)
                             YTrainh = np.concatenate ((YTrainh, sdbch1), axis = 0)
@@ -1235,7 +1241,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
             del nH14, nch14, nA14, nc14
             del nH15, nch15, nA15, nc15
             del nH16, nch16, nA16, nc16
-            if useSDBpatients == 1:
+            if useSDpatients == 1:
                 del sdbH1, sdbch1, sdbA1, sdbc1
                 del sdbH2, sdbch2, sdbA2, sdbc2
                 del sdbH3, sdbch3, sdbA3, sdbc3
@@ -1606,7 +1612,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             cappredictiony_predhA [combinationA] = 1
                     YTestOneLine = YTestOneLine [OverlappingLeftCorrectL : len (YTestOneLine) - OverlappingLeftCorrectR] # alingh the labels, takinh into consideration that they are currently alingn with the overlapping to the left scenario (a = 2)
                     YTestOneLine = YTestOneLine[CorrectRightA : len (YTestOneLine) - CorrectLeftA] # align the A phase and NREM predictions
-                    if useSDBpatients == 1:
+                    if useSDpatients == 1:
                         StringText = "EstimatedAPhase_Right_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) # save the outputs for further examination
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYA0R, f)
@@ -1686,7 +1692,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             cappredictiony_predhN [combinationN] = 1
                     YTesthOneLineh = YTesthOneLineh [OverlappingLeftCorrectL : len (YTesthOneLineh) - OverlappingLeftCorrectR]
                     YTesthOneLineh = YTesthOneLineh[CorrectRightH : len (YTesthOneLineh) - CorrectLeftH] # align the A phase and NREM predictions
-                    if useSDBpatients == 1:
+                    if useSDpatients == 1:
                         StringText = "EstimatedNREM_Right_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize)  # save the outputs for further examination
                         f = open (StringText, 'ab')
                         pickle.dump (PredictionYN0R, f)
@@ -1771,7 +1777,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     PPVInterAC [ff] = tp / (tp + fp)
                     NPVInterAC [ff] = tn / (tn + fn)
                     AtotalInter [ff] = sum (cappredictiony_predhA) # total number of epochs classified as A phase      
-                    if useSDBpatients == 1:
+                    if useSDpatients == 1:
                         StringText = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (cappredictiony_predhA, f)
@@ -1832,7 +1838,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                     PPVInterNC [ff] = tp / (tp + fp)
                     NPVInterNC [ff] = tn / (tn + fn)
                     NREMtotalInter [ff] = sum (NREMPredicted) # total number of epochs classified as NREM
-                    if useSDBpatients == 1:
+                    if useSDpatients == 1:
                         StringText = "EstimatedNREM_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                         f = open (StringText, 'ab')
                         pickle.dump (NREMPredicted, f)
@@ -1848,7 +1854,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 examineCAP = 1 # perform the CAP examination
                 NREMtotalInter [ff] = sum (cappredictiony_predhN) # total number of epochs classified as NREM
                 AtotalInter [ff] = sum (capPredictedPredicted) # total number of epochs classified as A phase
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     StringText = "EstimatedAPhase_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (cappredictiony_predhA, f)
@@ -1990,7 +1996,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 CAPrateErroPercentagetotalInter [ff] = (abs ((sum (capPredicted) / sum (NREMPredicted)) - (sum (capPredictedDatabase) / sum (YTesthOneLineh)))) / (sum (capPredictedDatabase) / sum (YTesthOneLineh)) # estimate the CAP rate error in percentage
                 print('CAP rate error : ', CAPrateErrototalInter [ff])
                 print('CAP rate error percentage : ', CAPrateErroPercentagetotalInter [ff])
-                if useSDBpatients == 1:
+                if useSDpatients == 1:
                     StringText = "EstimatedCAP_FSM_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
                     f = open (StringText, 'ab')
                     pickle.dump (capPredicted, f)
@@ -2068,7 +2074,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
         metricsAC = np.c_ [AccAtEndAC, SenAtEndAC, SpeAtEndAC, TPEndAC, TNEndAC, FPEndAC, FNEndAC, PPVEndAC, NPVEndAC, AtotalEnd] # variable holding all the results for the A phase analysis after ensemble
         metricsNC = np.c_ [AccAtEndNC, SenAtEndNC, SpeAtEndNC, TPEndNC, TNEndNC, FPEndNC, FNEndNC, PPVEndNC, NPVEndNC, NREMtotalEnd] # variable holding all the results for the NREM analysis after ensemble
         metricsC = np.c_ [AccAtEnd, SenAtEnd, SpeAtEnd, TPEnd, TNEnd, FPEnd, FNEnd, PPVEnd, NPVEnd, CAPtotalEnd, CAPrateErrototalEnd, CAPrateErroPercentagetotalEnd] # variable holding all the results for the CAP cycle and CAP rate analysis
-        if useSDBpatients == 1:
+        if useSDpatients == 1:
             f = open ("metricsAphaseV2.txt", 'ab') # open (or create if it does not exist) the pikle file in the adding entry mode
             pickle.dump (metricsA, f) # add a new entry to the pickle file
             f.close () # close the pickle file
