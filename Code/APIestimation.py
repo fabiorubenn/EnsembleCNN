@@ -7,24 +7,28 @@ import seaborn as sns
 import pandas as pd
 from sklearn.metrics import r2_score
 import pickle
+import os # to change the working directory
 
 numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to 14)
-numberSubjectsSDB = 3 # number of subjects with Sleep-Disordered Breathing (SDB) to be considered (from 0 to 3)
+numberSubjectsSD = 3 # number of subjects with Sleep-Disordered (SD) to be considered (from 0 to 3)
 startEpochs = 0 # number of the subject to start the leave one out examination
-useSDBpatients = 1 # 1 to use the SDB patiens and 0 to not use the SDB patients
+useSDpatients = 1 # 1 to use the SD patiens and 0 to not use the SD patients
 UseAPhaseEnsable = 1 # 1 to use the model with the esamble of A phase classifiers and 0 to use the model with only the estimation based on the center (overlappinf at left and right)
-if useSDBpatients == 1:
+disorder = "nfle" # specify the examined disorder, ins for insomnia, nfle for NFLE
+if useSDpatients == 1:
     Epochs = 19 # number of the subject to finish the leave one out examination
     BeginTest = 18 # location of the sorted array where the testing subject for the leave one out examination is identified
 else:
-    Epochs = 19-numberSubjectsSDB-1 # number of the subject to finish the leave one out examination
-    BeginTest = 18-numberSubjectsSDB-1 # location of the sorted array where the testing subject for the leave one out examination is identified
+    Epochs = 19-numberSubjectsSD-1 # number of the subject to finish the leave one out examination
+    BeginTest = 18-numberSubjectsSD-1 # location of the sorted array where the testing subject for the leave one out examination is identified
 Begin = 0 # location of the sorted array where the data for the first subject used to compose the training dataset for the leave one out examination is identified, the training dataset is composed of subejcts from Begin to BeginTest
 startTime = 0 # time where to start the analysis (for example, to elminate the first 30 minutes use 60*30)
 ff = 0 # number of the epoch to be examined
 PolinomialOrder = 1 # order of the polinomial to fit the regression line
 plotData = 0 # 1 to create and save the plots 
 method = 0 # method to estima the error percentage: 0 -> (np.mean(abs(AphaseIndex-AphaseIndexd)))/np.mean(AphaseIndexd)*100, 1 -> (abs(np.mean(AphaseIndex)-np.mean(AphaseIndexd)))/np.mean(AphaseIndexd)*100
+KernelSize = 5 # number of kernels used by the CNN
+os.chdir("D:\Github\EnsembleCNN\Data") # change the working directory
 
 numberSubjects=Epochs-startEpochs
 indices = np.arange(numberSubjects)
@@ -86,7 +90,7 @@ def ReadDataForAnalysis (StringText):
             except EOFError:
                 break
     # print(objects)
-    return objects [0]
+    return objects [-1]
 
 
 def PlotSubject (ee,ff,AphaseIndex,AphaseInde30s,AphaseInde60s,
@@ -108,15 +112,15 @@ def PlotSubject (ee,ff,AphaseIndex,AphaseInde30s,AphaseInde60s,
     plt.ylim([0, 1])
     plt.grid()
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            plt.savefig("NearRealTime_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"NearRealTime_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("NearRealTime_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"NearRealTime_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     else:
-        if useSDBpatients == 1:
-            plt.savefig("NearRealTime_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"NearRealTime_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("NearRealTime_Center_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"NearRealTime_Center_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     plt.close()
     # plt.show()
     # 30 s accumulated plot
@@ -131,15 +135,15 @@ def PlotSubject (ee,ff,AphaseIndex,AphaseInde30s,AphaseInde60s,
     plt.ylim([0, 1])
     plt.grid()
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated30s_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated30s_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated30s_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated30s_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     else:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated30s_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated30s_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated30s_Center_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated30s_Center_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     # plt.show()
     # 60 s accumulated plot
     plt.close()
@@ -154,15 +158,15 @@ def PlotSubject (ee,ff,AphaseIndex,AphaseInde30s,AphaseInde60s,
     plt.ylim([0, 1])
     plt.grid()
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated60s_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated60s_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated60s_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated60s_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     else:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated60s_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated60s_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated60s_Center_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated60s_Center_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     # plt.show()
     # 30 m accumulated plot
     plt.close()
@@ -177,15 +181,15 @@ def PlotSubject (ee,ff,AphaseIndex,AphaseInde30s,AphaseInde60s,
     plt.ylim([0, 1])
     plt.grid()
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated30m_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated30m_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated30m_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated30m_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     else:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated30m_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated30m_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated30m_Center_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated30m_Center_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     # plt.show()
     # 60 m accumulated plot
     plt.close()
@@ -200,15 +204,15 @@ def PlotSubject (ee,ff,AphaseIndex,AphaseInde30s,AphaseInde60s,
     plt.ylim([0, 1])
     plt.grid()
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated60m_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated60m_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated60m_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated60m_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     else:
-        if useSDBpatients == 1:
-            plt.savefig("Accumulated60m_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
+        if useSDpatients == 1:
+            plt.savefig(str(disorder)+"Accumulated60m_Center_Subejct_"+addText+"_{}_Epoch{}.png".format(ee, ff))
         else:
-            plt.savefig("Accumulated60m_Center_Subejct_"+addText+"_{}_Epoch{}-notSDB.png".format(ee, ff))
+            plt.savefig(str(disorder)+"Accumulated60m_Center_Subejct_"+addText+"_{}_Epoch{}-notSD.png".format(ee, ff))
     # plt.show()
     plt.close()
 
@@ -233,10 +237,10 @@ def plotRegression (API_MetricsAverages,API_MetricsAveragesDatabase,PolinomialOr
     sns.set_style("whitegrid")
     # sns.jointplot(API_MetricsAverages[:,0],API_MetricsAveragesDatabase[:,0], order=PolinomialOrder, kind="reg")
     plt.show()
-    # if useSDBpatients == 1:
-    #     plt.savefig("Regression_API_NearRealTime.png")
+    # if useSDpatients == 1:
+    #     plt.savefig(str(disorder)+"Regression_API_NearRealTime.png")
     # else:
-    #     plt.savefig("Regression_API_NearRealTime-notSDB.png")
+    #     plt.savefig(str(disorder)+"Regression_API_NearRealTime-notSD.png")
     # plt.close()
     # plt.ioff()
     # plt.figure()
@@ -257,10 +261,10 @@ def plotRegression (API_MetricsAverages,API_MetricsAveragesDatabase,PolinomialOr
     sns.set_style("ticks", {"xtick.major.size": 40, "ytick.major.size": 40})
     sns.set_style("whitegrid")
     plt.show()
-    # if useSDBpatients == 1:
-    #     plt.savefig("Regression_API_30s.png")
+    # if useSDpatients == 1:
+    #     plt.savefig(str(disorder)+"Regression_API_30s.png")
     # else:
-    #     plt.savefig("Regression_API_30s-notSDB.png")
+    #     plt.savefig(str(disorder)+"Regression_API_30s-notSD.png")
     # plt.close()
     # plt.ioff()
     # plt.figure()
@@ -281,10 +285,10 @@ def plotRegression (API_MetricsAverages,API_MetricsAveragesDatabase,PolinomialOr
     sns.set_style("ticks", {"xtick.major.size": 40, "ytick.major.size": 40})
     sns.set_style("whitegrid")
     plt.show()
-    # if useSDBpatients == 1:
-    #     plt.savefig("Regression_API_60s.png")
+    # if useSDpatients == 1:
+    #     plt.savefig(str(disorder)+"Regression_API_60s.png")
     # else:
-    #     plt.savefig("Regression_API_60s-notSDB.png")
+    #     plt.savefig(str(disorder)+"Regression_API_60s-notSD.png")
     # plt.close()
     # plt.ioff()
     # plt.figure()
@@ -305,10 +309,10 @@ def plotRegression (API_MetricsAverages,API_MetricsAveragesDatabase,PolinomialOr
     sns.set_style("ticks", {"xtick.major.size": 40, "ytick.major.size": 40})
     sns.set_style("whitegrid")
     plt.show()
-    # if useSDBpatients == 1:
-    #     plt.savefig("Regression_API_30m.png")
+    # if useSDpatients == 1:
+    #     plt.savefig(str(disorder)+"Regression_API_30m.png")
     # else:
-    #     plt.savefig("Regression_API_30m-notSDB.png")
+    #     plt.savefig(str(disorder)+Regression_API_30m-notSD.png")
     # plt.close()
     # plt.ioff()
     # plt.figure()
@@ -329,10 +333,10 @@ def plotRegression (API_MetricsAverages,API_MetricsAveragesDatabase,PolinomialOr
     sns.set_style("ticks", {"xtick.major.size": 40, "ytick.major.size": 40})
     sns.set_style("whitegrid")
     plt.show()
-    # if useSDBpatients == 1:
-    #     plt.savefig("Regression_API_60m.png")
+    # if useSDpatients == 1:
+    #     plt.savefig(str(disorder)+"Regression_API_60m.png")
     # else:
-    #     plt.savefig("Regression_API_60m-notSDB.png")
+    #     plt.savefig(str(disorder)+"Regression_API_60m-notSD.png")
     # plt.close()
 
 
@@ -370,19 +374,11 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
     # From the model predictions
     
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            StringTextA = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "EstimatedNREM_PostProcessing_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "EstimatedNREM_PostProcessing_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"EstimatedAPhase_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"EstimatedNREM_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
     else:
-        if useSDBpatients == 1:
-            StringTextA = "EstimatedAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "EstimatedNREMAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "EstimatedAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "EstimatedNREMAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"EstimatedAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"EstimatedNREMAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
 
     A = ReadDataForAnalysis (StringTextA)
     N = ReadDataForAnalysis (StringTextN)
@@ -400,19 +396,11 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
 
     # From database
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            StringTextA = "DatabaseAPhase_Combined_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "DatabaseNREM_Combined_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "DatabaseAPhase_Combined_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "DatabaseNREM_Combined_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"DatabaseAPhase_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"DatabaseNREM_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
     else:
-        if useSDBpatients == 1:
-            StringTextA = "DatabaseAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "DatabaseNREMAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "DatabaseAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "DatabaseNREMAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"DatabaseAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"DatabaseNREMAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
     Ad = ReadDataForAnalysis (StringTextA)
     Nd = ReadDataForAnalysis (StringTextN)
     
@@ -508,19 +496,11 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
     # From the model predictions
     
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            StringTextA = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "EstimatedNREM_PostProcessing_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "EstimatedAPhase_PostProcessing_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "EstimatedNREM_PostProcessing_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"EstimatedAPhase_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"EstimatedNREM_PostProcessing_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
     else:
-        if useSDBpatients == 1:
-            StringTextA = "EstimatedAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "EstimatedNREMAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "EstimatedAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "EstimatedNREMAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"EstimatedAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"EstimatedNREMAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
 
     A = ReadDataForAnalysis (StringTextA)
     N = ReadDataForAnalysis (StringTextN)
@@ -538,19 +518,11 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
 
     # From database
     if UseAPhaseEnsable == 1:
-        if useSDBpatients == 1:
-            StringTextA = "DatabaseAPhase_Combined_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "DatabaseNREM_Combined_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "DatabaseAPhase_Combined_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "DatabaseNREM_Combined_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"DatabaseAPhase_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"DatabaseNREM_Combined_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
     else:
-        if useSDBpatients == 1:
-            StringTextA = "DatabaseAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-            StringTextN = "DatabaseNREMAfterCorrection_Center_Center_subject{}_Epoch{}.txt".format(ee, ff)
-        else:
-            StringTextA = "DatabaseAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
-            StringTextN = "DatabaseNREMAfterCorrection_Center_Center_subject{}_Epoch{}-notSDB.txt".format(ee, ff)
+        StringTextA = str(disorder)+"DatabaseAPhaseAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
+        StringTextN = str(disorder)+"DatabaseNREMAfterCorrection_Center_Center_subject{}_Epoch{}_KernelSize{}.txt".format(ee, ff, KernelSize) 
     Ad = ReadDataForAnalysis (StringTextA)
     Nd = ReadDataForAnalysis (StringTextN)
     
@@ -644,36 +616,36 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
     API_metrics[ee,3]=AphaseInde30mCorrected
     API_metrics[ee,4]=AphaseInde60mCorrected
     
-    # f = open("AphaseIndex.txt", 'ab')
-    # pickle.dump(AphaseIndex, f)
-    # f.close()
-    # f = open("AphaseIndexd.txt", 'ab')
-    # pickle.dump(AphaseIndexd, f)
-    # f.close()
-    # f = open("AphaseInde30s.txt", 'ab')
-    # pickle.dump(AphaseInde30s, f)
-    # f.close()
-    # f = open("AphaseInde30sd.txt", 'ab')
-    # pickle.dump(AphaseInde30sd, f)
-    # f.close()
-    # f = open("AphaseInde60s.txt", 'ab')
-    # pickle.dump(AphaseInde60s, f)
-    # f.close()
-    # f = open("AphaseInde60sd.txt", 'ab')
-    # pickle.dump(AphaseInde60sd, f)
-    # f.close()
-    # f = open("AphaseInde30m.txt", 'ab')
-    # pickle.dump(AphaseInde30m, f)
-    # f.close()
-    # f = open("AphaseInde30md.txt", 'ab')
-    # pickle.dump(AphaseInde30md, f)
-    # f.close()
-    # f = open("AphaseInde60m.txt", 'ab')
-    # pickle.dump(AphaseInde60m, f)
-    # f.close()
-    # f = open("AphaseInde60md.txt", 'ab')
-    # pickle.dump(AphaseInde60md, f)
-    # f.close()
+    f = open(str(disorder)+"AphaseIndex.txt", 'ab')
+    pickle.dump(AphaseIndex, f)
+    f.close()
+    f = open(str(disorder)+"AphaseIndexd.txt", 'ab')
+    pickle.dump(AphaseIndexd, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde30s.txt", 'ab')
+    pickle.dump(AphaseInde30s, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde30sd.txt", 'ab')
+    pickle.dump(AphaseInde30sd, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde60s.txt", 'ab')
+    pickle.dump(AphaseInde60s, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde60sd.txt", 'ab')
+    pickle.dump(AphaseInde60sd, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde30m.txt", 'ab')
+    pickle.dump(AphaseInde30m, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde30md.txt", 'ab')
+    pickle.dump(AphaseInde30md, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde60m.txt", 'ab')
+    pickle.dump(AphaseInde60m, f)
+    f.close()
+    f = open(str(disorder)+"AphaseInde60md.txt", 'ab')
+    pickle.dump(AphaseInde60md, f)
+    f.close()
     
     
     
@@ -694,13 +666,13 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
     # f = open("AphaseInde30sBLplot.txt", 'ab')
     # pickle.dump(AphaseInde30sCorrected, f)
     # f.close()
-    # f = open("AphaseInde30sdBLplot.txt", 'ab')
+    # f = open("AphaseInde30SDLplot.txt", 'ab')
     # pickle.dump(np.mean(AphaseInde30sd), f)
     # f.close()
     # f = open("AphaseInde60sBLplot.txt", 'ab')
     # pickle.dump(AphaseInde60sCorrected, f)
     # f.close()
-    # f = open("AphaseInde60sdBLplot.txt", 'ab')
+    # f = open("AphaseInde60SDLplot.txt", 'ab')
     # pickle.dump(np.mean(AphaseInde60sd), f)
     # f.close()
     # f = open("AphaseInde30mBLplot.txt", 'ab')
@@ -716,34 +688,34 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
     # pickle.dump(np.mean(AphaseInde60md), f)
     # f.close()
     
-    # f = open("AphaseIndexBLplotSDB.txt", 'ab')
+    # f = open("AphaseIndexBLplotSD.txt", 'ab')
     # pickle.dump(AphaseIndexCorrected, f)
     # f.close()
-    # f = open("AphaseIndexdBLplotSDB.txt", 'ab')
+    # f = open("AphaseIndexdBLplotSD.txt", 'ab')
     # pickle.dump(np.mean(AphaseIndexd), f)
     # f.close()
-    # f = open("AphaseInde30sBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde30sBLplotSD.txt", 'ab')
     # pickle.dump(AphaseInde30sCorrected, f)
     # f.close()
-    # f = open("AphaseInde30sdBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde30SDLplotSD.txt", 'ab')
     # pickle.dump(np.mean(AphaseInde30sd), f)
     # f.close()
-    # f = open("AphaseInde60sBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde60sBLplotSD.txt", 'ab')
     # pickle.dump(AphaseInde60sCorrected, f)
     # f.close()
-    # f = open("AphaseInde60sdBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde60SDLplotSD.txt", 'ab')
     # pickle.dump(np.mean(AphaseInde60sd), f)
     # f.close()
-    # f = open("AphaseInde30mBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde30mBLplotSD.txt", 'ab')
     # pickle.dump(AphaseInde30mCorrected, f)
     # f.close()
-    # f = open("AphaseInde30mdBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde30mdBLplotSD.txt", 'ab')
     # pickle.dump(np.mean(AphaseInde30md), f)
     # f.close()
-    # f = open("AphaseInde60mBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde60mBLplotSD.txt", 'ab')
     # pickle.dump(AphaseInde60mCorrected, f)
     # f.close()
-    # f = open("AphaseInde60mdBLplotSDB.txt", 'ab')
+    # f = open("AphaseInde60mdBLplotSD.txt", 'ab')
     # pickle.dump(np.mean(AphaseInde60md), f)
     # f.close()
     

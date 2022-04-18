@@ -31,8 +31,8 @@ import os # to change the working directory
 """
 numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to numberSubjectsN)
 numberSubjectsSD = 3 # number of subjects with sleep Disorder to be considered (from 0 to numberSubjectsSD)
-startEpochs = 0 # number of the subject to start the leave one out examination
-useSDpatients = 2 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE
+startEpochs = 18 # 4 number of the subject to start the leave one out examination
+useSDpatients = 5 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE, 3 to use PLM, X to use ins
 Begin = 0 # location of the sorted array where the data for the first subject used to compose the training dataset for the leave one out examination is identified, the training dataset is composed of subejcts from Begin to BeginTest
 EpochsWork = 1 # number of examined iterations for each subejct
 OverLap = [8, 12, 8] # number of overlapping seconds to be considered in the overlapping windows of A phase analysis (need to be 0 or an odd number), either [0] if no overlapping or [amount of overlapping for right, amount of overlapping for center, amount of overlapping for left] to use overlapping
@@ -49,8 +49,12 @@ if useSDpatients > 0:
     BeginTest = 18 # location of the sorted array where the testing subject for the leave one out examination is identified
     if useSDpatients == 1: 
         disorder = "sdb" # healthy and SDB
-    else:
+    elif useSDpatients == 2:
         disorder = "nfle" # healthy and NFLE
+    elif useSDpatients == 3:
+        disorder = "plm" # healthy and PLM
+    else:
+        disorder = "ins" # healthy and ins
 else:
     disorder = "n"
     Epochs = 19-numberSubjectsSD-1 # number of the subject to finish the leave one out examination
@@ -305,7 +309,7 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                 for JJ in range (numberSubjectsSD + 1): # load the SD subjects' data
                     if useSDpatients == 1: # for SDB
                         KK = JJ
-                    else: # for nfle
+                    elif useSDpatients == 2: # for nfle
                         if JJ == 0: 
                             KK = 6
                         elif JJ == 1: 
@@ -314,11 +318,32 @@ for ee in range (startEpochs, Epochs, 1): # examine from subejct identified by s
                             KK = 13
                         else:
                             KK = 14
-                    Datadata = str (disorder) + str (KK + 1) + "eegminut2.mat"
+                    elif useSDpatients == 3: # for plm
+                        if JJ == 0: 
+                            KK = 1
+                        elif JJ == 1: 
+                            KK = 2
+                        elif JJ == 2: 
+                            KK = 7
+                        else:
+                            KK = 9
+                    else: # for ins
+                        if JJ == 0: 
+                            KK = 1
+                        elif JJ == 1: 
+                            KK = 4
+                        elif JJ == 2: 
+                            KK = 6
+                        else:
+                            KK = 8
+                    if useSDpatients <= 2:
+                        Datadata = str (disorder) + str (KK + 1) + "eegminut2.mat"
+                    else:
+                        Datadata = str (disorder) + str (KK + 1) + "C4V2.mat"
                     labName = str (disorder) + str (KK + 1) + "eegminutLable2.mat"
                     labNameh = str (disorder) + str (KK + 1) + "hypnoEEGminutLable2V2.mat"
                     mat = spio.loadmat (Datadata, squeeze_me = True)
-                    if useSDpatients == 1:
+                    if useSDpatients == 1 or useSDpatients == 0:
                         Datadata = mat.get ('eegSensor')
                     else:
                         Datadata = mat.get ('c4')

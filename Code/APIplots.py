@@ -2,77 +2,79 @@ import scipy.io as spio
 import numpy as np
 import pickle
 from scipy import stats
+import os # to change the working directory
 
 PlotNormal=0 # 1 to plot for normal subjects
 PlotSDB=0 # 1 to plot for SDB subjects
 PlotErrorBars=1 # 1 to plot the errorbars
-
+disorder = "nfle" # specify the examined disorder, ins for insomnia, nfle for NFLE
+os.chdir("D:\Github\EnsembleCNN\Data") # change the working directory
 
 objectNRT = []
-with (open("AphaseIndex.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseIndex.txt", "rb")) as openfile:
     while True:
         try:
             objectNRT.append(pickle.load(openfile))
         except EOFError:
             break
 objectNRTd = []
-with (open("AphaseIndexd.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseIndexd.txt", "rb")) as openfile:
     while True:
         try:
             objectNRTd.append(pickle.load(openfile))
         except EOFError:
             break
 object30s = []
-with (open("AphaseInde30s.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde30s.txt", "rb")) as openfile:
     while True:
         try:
             object30s.append(pickle.load(openfile))
         except EOFError:
             break
 object30sd = []
-with (open("AphaseInde30sd.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde30sd.txt", "rb")) as openfile:
     while True:
         try:
             object30sd.append(pickle.load(openfile))
         except EOFError:
             break
 object60s = []
-with (open("AphaseInde60s.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde60s.txt", "rb")) as openfile:
     while True:
         try:
             object60s.append(pickle.load(openfile))
         except EOFError:
             break
 object60sd = []
-with (open("AphaseInde60sd.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde60sd.txt", "rb")) as openfile:
     while True:
         try:
             object60sd.append(pickle.load(openfile))
         except EOFError:
             break
 object30m = []
-with (open("AphaseInde30m.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde30m.txt", "rb")) as openfile:
     while True:
         try:
             object30m.append(pickle.load(openfile))
         except EOFError:
             break
 object30md = []
-with (open("AphaseInde30md.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde30md.txt", "rb")) as openfile:
     while True:
         try:
             object30md.append(pickle.load(openfile))
         except EOFError:
             break
 object60m = []
-with (open("AphaseInde60m.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde60m.txt", "rb")) as openfile:
     while True:
         try:
             object60m.append(pickle.load(openfile))
         except EOFError:
             break
 object60md = []
-with (open("AphaseInde60md.txt", "rb")) as openfile:
+with (open(str(disorder)+"AphaseInde60md.txt", "rb")) as openfile:
     while True:
         try:
             object60md.append(pickle.load(openfile))
