@@ -5,7 +5,7 @@ from scipy import stats
 import os # to change the working directory
 
 PlotNormal=0 # 1 to plot for normal subjects
-PlotSDB=0 # 1 to plot for SDB subjects
+PlotSD=0 # 1 to plot for SD subjects
 PlotErrorBars=1 # 1 to plot the errorbars
 disorder = "nfle" # specify the examined disorder, ins for insomnia, nfle for NFLE
 os.chdir("D:\Github\EnsembleCNN\Data") # change the working directory
@@ -378,9 +378,9 @@ if PlotNormal > 0:
     plt.grid()
 
 
-#### SDB subjects
+#### SD subjects
 
-if PlotSDB > 0:
+if PlotSD > 0:
     
     NRT=np.zeros((4,len(max(objectNRT, key=len))))
     for k in range (15,19,1):

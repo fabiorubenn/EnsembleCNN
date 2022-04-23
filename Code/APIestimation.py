@@ -14,7 +14,7 @@ numberSubjectsSD = 3 # number of subjects with Sleep-Disordered (SD) to be consi
 startEpochs = 0 # number of the subject to start the leave one out examination
 useSDpatients = 1 # 1 to use the SD patiens and 0 to not use the SD patients
 UseAPhaseEnsable = 1 # 1 to use the model with the esamble of A phase classifiers and 0 to use the model with only the estimation based on the center (overlappinf at left and right)
-disorder = "nfle" # specify the examined disorder, ins for insomnia, nfle for NFLE
+disorder = "ins" # specify the examined disorder, ins for insomnia, nfle for NFLE
 if useSDpatients == 1:
     Epochs = 19 # number of the subject to finish the leave one out examination
     BeginTest = 18 # location of the sorted array where the testing subject for the leave one out examination is identified
@@ -26,6 +26,7 @@ startTime = 0 # time where to start the analysis (for example, to elminate the f
 ff = 0 # number of the epoch to be examined
 PolinomialOrder = 1 # order of the polinomial to fit the regression line
 plotData = 0 # 1 to create and save the plots 
+saveAPIMetrics = 0 # use 1 to save the API metrics in files
 method = 0 # method to estima the error percentage: 0 -> (np.mean(abs(AphaseIndex-AphaseIndexd)))/np.mean(AphaseIndexd)*100, 1 -> (abs(np.mean(AphaseIndex)-np.mean(AphaseIndexd)))/np.mean(AphaseIndexd)*100
 KernelSize = 5 # number of kernels used by the CNN
 os.chdir("D:\Github\EnsembleCNN\Data") # change the working directory
@@ -610,115 +611,108 @@ for ee in range (startEpochs, Epochs, 1): # number of the subject to be examined
             API_MetricsAveragesAfterCorrection[ee,3] = AphaseInde30mCorrected*100
             API_MetricsAveragesAfterCorrection[ee,4] = AphaseInde60mCorrected*100
     
-    API_metrics[ee,0]=AphaseIndexCorrected
-    API_metrics[ee,1]=AphaseInde30sCorrected
-    API_metrics[ee,2]=AphaseInde60sCorrected
-    API_metrics[ee,3]=AphaseInde30mCorrected
-    API_metrics[ee,4]=AphaseInde60mCorrected
+    if PolinomialOrder > 0:
+        API_metrics[ee,0]=AphaseIndexCorrected
+        API_metrics[ee,1]=AphaseInde30sCorrected
+        API_metrics[ee,2]=AphaseInde60sCorrected
+        API_metrics[ee,3]=AphaseInde30mCorrected
+        API_metrics[ee,4]=AphaseInde60mCorrected
     
-    f = open(str(disorder)+"AphaseIndex.txt", 'ab')
-    pickle.dump(AphaseIndex, f)
-    f.close()
-    f = open(str(disorder)+"AphaseIndexd.txt", 'ab')
-    pickle.dump(AphaseIndexd, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde30s.txt", 'ab')
-    pickle.dump(AphaseInde30s, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde30sd.txt", 'ab')
-    pickle.dump(AphaseInde30sd, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde60s.txt", 'ab')
-    pickle.dump(AphaseInde60s, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde60sd.txt", 'ab')
-    pickle.dump(AphaseInde60sd, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde30m.txt", 'ab')
-    pickle.dump(AphaseInde30m, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde30md.txt", 'ab')
-    pickle.dump(AphaseInde30md, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde60m.txt", 'ab')
-    pickle.dump(AphaseInde60m, f)
-    f.close()
-    f = open(str(disorder)+"AphaseInde60md.txt", 'ab')
-    pickle.dump(AphaseInde60md, f)
-    f.close()
+    if saveAPIMetrics == 1:
+        f = open(str(disorder)+"AphaseIndex.txt", 'ab')
+        pickle.dump(AphaseIndex, f)
+        f.close()
+        f = open(str(disorder)+"AphaseIndexd.txt", 'ab')
+        pickle.dump(AphaseIndexd, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30s.txt", 'ab')
+        pickle.dump(AphaseInde30s, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30sd.txt", 'ab')
+        pickle.dump(AphaseInde30sd, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60s.txt", 'ab')
+        pickle.dump(AphaseInde60s, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60sd.txt", 'ab')
+        pickle.dump(AphaseInde60sd, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30m.txt", 'ab')
+        pickle.dump(AphaseInde30m, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30md.txt", 'ab')
+        pickle.dump(AphaseInde30md, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60m.txt", 'ab')
+        pickle.dump(AphaseInde60m, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60md.txt", 'ab')
+        pickle.dump(AphaseInde60md, f)
+        f.close()
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # f = open("AphaseIndexBLplot.txt", 'ab')
-    # pickle.dump(AphaseIndexCorrected, f)
-    # f.close()
-    # f = open("AphaseIndexdBLplot.txt", 'ab')
-    # pickle.dump(np.mean(AphaseIndexd), f)
-    # f.close()
-    # f = open("AphaseInde30sBLplot.txt", 'ab')
-    # pickle.dump(AphaseInde30sCorrected, f)
-    # f.close()
-    # f = open("AphaseInde30SDLplot.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde30sd), f)
-    # f.close()
-    # f = open("AphaseInde60sBLplot.txt", 'ab')
-    # pickle.dump(AphaseInde60sCorrected, f)
-    # f.close()
-    # f = open("AphaseInde60SDLplot.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde60sd), f)
-    # f.close()
-    # f = open("AphaseInde30mBLplot.txt", 'ab')
-    # pickle.dump(AphaseInde30mCorrected, f)
-    # f.close()
-    # f = open("AphaseInde30mdBLplot.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde30md), f)
-    # f.close()
-    # f = open("AphaseInde60mBLplot.txt", 'ab')
-    # pickle.dump(AphaseInde60mCorrected, f)
-    # f.close()
-    # f = open("AphaseInde60mdBLplot.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde60md), f)
-    # f.close()
-    
-    # f = open("AphaseIndexBLplotSD.txt", 'ab')
-    # pickle.dump(AphaseIndexCorrected, f)
-    # f.close()
-    # f = open("AphaseIndexdBLplotSD.txt", 'ab')
-    # pickle.dump(np.mean(AphaseIndexd), f)
-    # f.close()
-    # f = open("AphaseInde30sBLplotSD.txt", 'ab')
-    # pickle.dump(AphaseInde30sCorrected, f)
-    # f.close()
-    # f = open("AphaseInde30SDLplotSD.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde30sd), f)
-    # f.close()
-    # f = open("AphaseInde60sBLplotSD.txt", 'ab')
-    # pickle.dump(AphaseInde60sCorrected, f)
-    # f.close()
-    # f = open("AphaseInde60SDLplotSD.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde60sd), f)
-    # f.close()
-    # f = open("AphaseInde30mBLplotSD.txt", 'ab')
-    # pickle.dump(AphaseInde30mCorrected, f)
-    # f.close()
-    # f = open("AphaseInde30mdBLplotSD.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde30md), f)
-    # f.close()
-    # f = open("AphaseInde60mBLplotSD.txt", 'ab')
-    # pickle.dump(AphaseInde60mCorrected, f)
-    # f.close()
-    # f = open("AphaseInde60mdBLplotSD.txt", 'ab')
-    # pickle.dump(np.mean(AphaseInde60md), f)
-    # f.close()
-    
+        f = open(str(disorder)+"AphaseIndexBLplot.txt", 'ab')
+        pickle.dump(AphaseIndexCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseIndexdBLplot.txt", 'ab')
+        pickle.dump(np.mean(AphaseIndexd), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30sBLplot.txt", 'ab')
+        pickle.dump(AphaseInde30sCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30sdBLplot.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde30sd), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60sBLplot.txt", 'ab')
+        pickle.dump(AphaseInde60sCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60sdBLplot.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde60sd), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30mBLplot.txt", 'ab')
+        pickle.dump(AphaseInde30mCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30mdBLplot.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde30md), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60mBLplot.txt", 'ab')
+        pickle.dump(AphaseInde60mCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60mdBLplot.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde60md), f)
+        f.close()
+        
+        f = open(str(disorder)+"AphaseIndexBLplotSD.txt", 'ab')
+        pickle.dump(AphaseIndexCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseIndexdBLplotSD.txt", 'ab')
+        pickle.dump(np.mean(AphaseIndexd), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30sBLplotSD.txt", 'ab')
+        pickle.dump(AphaseInde30sCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30sdBLplotSD.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde30sd), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60sBLplotSD.txt", 'ab')
+        pickle.dump(AphaseInde60sCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60sdBLplotSD.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde60sd), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30mBLplotSD.txt", 'ab')
+        pickle.dump(AphaseInde30mCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde30mdBLplotSD.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde30md), f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60mBLplotSD.txt", 'ab')
+        pickle.dump(AphaseInde60mCorrected, f)
+        f.close()
+        f = open(str(disorder)+"AphaseInde60mdBLplotSD.txt", 'ab')
+        pickle.dump(np.mean(AphaseInde60md), f)
+        f.close()
+            
+
 if plotData == 1:
         # AphaseIndexCorrected = 0
         # AphaseInde30sCorrected = 0
