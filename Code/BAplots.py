@@ -31,7 +31,7 @@ import os # to change the working directory
 #### for subject based analysis
 Analysis="60s"
 useSD=1 # 1 to use the SD subejct
-disorder = "nfle" # specify the examined disorder, ins for insomnia, nfle for NFLE
+disorder = "ins" # specify the examined disorder, ins for insomnia, nfle for NFLE
 os.chdir("D:\Github\EnsembleCNN\Data") # change the working directory
 
 if useSD == 1:
@@ -93,8 +93,10 @@ import pingouin as pg
 import matplotlib.pyplot as plt
 # plt.style.use('ggplot')
 ax = pg.plot_blandaltman(AphaseIndexd, AphaseIndex)
-plt.rcParams.update({'font.size': 20})
+plt.rcParams.update({'font.size': 40})
 plt.ylabel('Difference')
 plt.xlabel('Mean')
 plt.ylim([-0.2, 0.2])
 plt.xlim([0, 0.4])
+plt.xticks([0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40], ['0', '0.05', '0.10', '0.15', '0.20', '0.25', '0.30', '0.35', '0.40'])
+plt.yticks([-0.20, -0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15, 0.20], ['-0.20', '-0.15', '-0.10', '-0.05', '0', '0.05', '0.10', '0.15', '0.20'])
