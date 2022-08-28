@@ -32,7 +32,7 @@ import os # to change the working directory
 numberSubjectsN = 14 # number of normal subjects to be considered (from 0 to numberSubjectsN)
 numberSubjectsSD = 3 # number of subjects with sleep Disorder to be considered (from 0 to numberSubjectsSD)
 startEpochs = 0 # 4 number of the subject to start the leave one out examination
-useSDpatients = 0 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE, 3 to use PLM, X to use ins
+useSDpatients = 0 # 0 to use only healthy, 1 to use healthy and SDB, 2 to use healthy and NFLE, 3 to use healthy and PLM, X to use healthy and ins
 Begin = 0 # location of the sorted array where the data for the first subject used to compose the training dataset for the leave one out examination is identified, the training dataset is composed of subejcts from Begin to BeginTest
 EpochsWork = 1 # number of examined iterations for each subejct
 OverLap = [8, 12, 8] # number of overlapping seconds to be considered in the overlapping windows of A phase analysis (need to be 0 or an odd number), either [0] if no overlapping or [amount of overlapping for right, amount of overlapping for center, amount of overlapping for left] to use overlapping
